@@ -1,5 +1,6 @@
 <html>
   <head>
+    <meta charset="UTF-8">
     <title>Canvas tutorial</title>
     <script type="text/javascript" src="./js/test.js" charset="utf-8"></script>
     <script type="text/javascript">
@@ -21,8 +22,8 @@
     <form name="settei" method="get">
       アルゴリズムの種類
       <select name="algorithm" id="algorithm" size="1" onChange="algorithmSelected(value)">
-        <option value="kmeans" id="kmeans">K-means</option>
-        <option value="dpmeans" id="dpmeans">DP-means</option>
+        <option value="0" id="kmeans">K-means</option>
+        <option value="1" id="dpmeans">DP-means</option>
       </select>
       クラスタ数 <!-- ユーザには非表示 -->
       <select name="clusterNum" id="clusterNum" size="1">
@@ -44,11 +45,11 @@
       </select>
       チューニング <!-- ユーザには非表示 -->
       <select name="tuning" id="tuning" size="1">
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
+        <option value="0">good</option>
+        <option value="1">bad</option>
+        <option value="2">random</option>
       </select>
-      <button type="submit" name="action" value="send" onclick="getData()">決定</button>
+      <button type="button" name="action" value="send" onclick="getData()">決定</button>
     </form>
     <script>
     function algorithmSelected(value){
@@ -65,6 +66,8 @@
     }
     
     </script>
+    <div id="request">request</div>
+    <div id="test">test area</div>
     <a href="test.html">test page</a>
   </body>
 </html>
