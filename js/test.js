@@ -7,9 +7,12 @@ function sendRequest(){
 }
 
 function getData(){
+    var index = document.selbox.numofdata.selectedIndex;
+    var numofdata = document.selbox.numofdata.options[index].text;
     var url='Data';
+    var param = "?numofdata=" + numofdata
     var request = new XMLHttpRequest();
-    request.open('GET', url, false);
+    request.open('GET', url+param, false);
     request.send(null);
     document.getElementById("hoge").textContent = request.responseText;
 }
