@@ -1,45 +1,70 @@
-<!--
-  Licensed to the Apache Software Foundation (ASF) under one or more
-  contributor license agreements.  See the NOTICE file distributed with
-  this work for additional information regarding copyright ownership.
-  The ASF licenses this file to You under the Apache License, Version 2.0
-  (the "License"); you may not use this file except in compliance with
-  the License.  You may obtain a copy of the License at
+<html>
+  <head>
+    <title>Canvas tutorial</title>
+    <script type="text/javascript" src="./js/test.js" charset="utf-8"></script>
+    <script type="text/javascript">
+      function draw(){
+        var canvas = document.getElementById("tutorial");
+        if (canvas.getContext){
+          var ctx = canvas.getContext('2d');
+        }
+      }
+    </script>
+    <style type="text/css">
+      canvas { border: 1px solid #999; }
+    </style>
+  </head>
+  <body onload="draw();">
+    <canvas id="tutorial" width="400" height="300"></canvas>
+    <canvas id="tutorial" width="400" height="300"></canvas>
+    
+    <form name="settei" method="get">
+      アルゴリズムの種類
+      <select name="algorithm" id="algorithm" size="1" onChange="algorithmSelected(value)">
+        <option value="kmeans" id="kmeans">K-means</option>
+        <option value="dpmeans" id="dpmeans">DP-means</option>
+      </select>
+      クラスタ数 <!-- ユーザには非表示 -->
+      <select name="clusterNum" id="clusterNum" size="1">
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+      </select>
+      ペナルティパラメータ <!-- ユーザには非表示? -->
+      <select name="threshold" id="threshold" size="1" disabled=true>
+        <option value="2">1</option>
+        <option value="3">2</option>
+        <option value="4">3</option>
+      </select>
+      生成するクラスタ数 <!-- ユーザには非表示 -->
+      <select name="makeClusterNum" id="makeClusterNum" size="1"> <!--style="visibility:hidden">!-->
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+      </select>
+      チューニング <!-- ユーザには非表示 -->
+      <select name="tuning" id="tuning" size="1">
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+      </select>
+      <button type="submit" name="action" value="send" onclick="getData()">決定</button>
+    </form>
+    <script>
+    function algorithmSelected(value){
+      var kmeansObj = document.getElementById("clusterNum");
+      var dpmeansObj = document.getElementById("threshold");
 
-      http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
--->
-<!DOCTYPE HTML><html lang="en"><head>
-<meta charset="UTF-8">
-<title>Clustering game</title>
-<link rel="stylesheet" href="./css/style.css" type="text/css" />
-<script type="text/javascript" src="./js/test.js" charset="utf-8"></script>
-</head>
-<body>
-
-<h3>clustering game</H3>
-
-<form name="selbox">
-<select name="numofdata">
-<option value="">5</option>
-<option value="">10</option>
-<option value="">20</option>
-</select>
-</form>
-
-<input type="button" id="request" value="Javascript動作テスト" onclick="rewrite()"/>
-<input type="button" id="request" value="Servlet 動作テスト" onclick="sendRequest()"/>
-
-<input type="button" id="request" value="決定" onclick="getData()">
-<input type="button" id="request" value="答え合わせ" onclick="getLearn()">
-
-<div id="hoge">
-名無しの権兵衛
-</div>
-
-</body></html>
+      if(value == "kmeans"){
+          kmeansObj.disabled = false;
+          dpmeansObj.disabled = true;
+      }else if(value == "dpmeans"){
+          kmeansObj.disabled = true;
+          dpmeansObj.disabled = false;
+      }
+    }
+    
+    </script>
+    <a href="test.html">test page</a>
+  </body>
+</html>
