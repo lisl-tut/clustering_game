@@ -36,4 +36,22 @@
         <url-pattern>/HelloWorld</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>Data</servlet-name>
+        <servlet-class>Data</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Data</servlet-name>
+        <url-pattern>/Data</url-pattern>
+    </servlet-mapping>
+
+
+    <servlet>
+        <servlet-name>Learn</servlet-name>
+        <servlet-class>Learn</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Learn</servlet-name>
+        <url-pattern>/Learn</url-pattern>
+    </servlet-mapping>
 </web-app>
