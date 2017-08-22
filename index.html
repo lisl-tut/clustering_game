@@ -33,9 +33,9 @@
       </select>
       ペナルティパラメータ <!-- ユーザには非表示? -->
       <select name="threshold" id="threshold" size="1" disabled=true>
-        <option value="2">1</option>
-        <option value="3">2</option>
-        <option value="4">3</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
       </select>
       生成するクラスタ数 <!-- ユーザには非表示 -->
       <select name="makeClusterNum" id="makeClusterNum" size="1"> <!--style="visibility:hidden">!-->
@@ -55,13 +55,14 @@
     function algorithmSelected(value){
       var kmeansObj = document.getElementById("clusterNum");
       var dpmeansObj = document.getElementById("threshold");
-
-      if(value == "kmeans"){
+      if(value == "0"){
           kmeansObj.disabled = false;
           dpmeansObj.disabled = true;
-      }else if(value == "dpmeans"){
+          document.getElementById("threshold").value = "2";
+      }else if(value == "1"){
           kmeansObj.disabled = true;
           dpmeansObj.disabled = false;
+          document.getElementById("clusterNum").value = "2";
       }
     }
     </script>
