@@ -17,37 +17,37 @@
     <canvas id="tutorial" width="400" height="300"></canvas>
     <canvas id="tutorial" width="400" height="300"></canvas>
     
-    <form name="settei" method="post" action="jsp.jsp">
-      ƒAƒ‹ƒSƒŠƒYƒ€‚ÌŽí—Þ
+    <form name="settei" method="get" action="jsp.jsp">
+      ã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ ã®ç¨®é¡ž
       <select name="algorithm" id="algorithm" size="1" onChange="algorithmSelected(value)">
         <option value="kmeans" id="kmeans">K-means</option>
         <option value="dpmeans" id="dpmeans">DP-means</option>
       </select>
-      ƒNƒ‰ƒXƒ^” <!-- ƒ†[ƒU‚É‚Í”ñ•\Ž¦ -->
+      ã‚¯ãƒ©ã‚¹ã‚¿æ•° <!-- ãƒ¦ãƒ¼ã‚¶ã«ã¯éžè¡¨ç¤º -->
       <select name="clusterNum" id="clusterNum" size="1">
         <option value="2">2</option>
         <option value="3">3</option>
         <option value="4">4</option>
       </select>
-      ƒyƒiƒ‹ƒeƒBƒpƒ‰ƒ[ƒ^ <!-- ƒ†[ƒU‚É‚Í”ñ•\Ž¦? -->
+      ãƒšãƒŠãƒ«ãƒ†ã‚£ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ <!-- ãƒ¦ãƒ¼ã‚¶ã«ã¯éžè¡¨ç¤º? -->
       <select name="threshold" id="threshold" size="1" disabled=true>
         <option value="2">1</option>
         <option value="3">2</option>
         <option value="4">3</option>
       </select>
-      ¶¬‚·‚éƒNƒ‰ƒXƒ^” <!-- ƒ†[ƒU‚É‚Í”ñ•\Ž¦ -->
+      ç”Ÿæˆã™ã‚‹ã‚¯ãƒ©ã‚¹ã‚¿æ•° <!-- ãƒ¦ãƒ¼ã‚¶ã«ã¯éžè¡¨ç¤º -->
       <select name="makeClusterNum" id="makeClusterNum" size="1"> <!--style="visibility:hidden">!-->
         <option value="2">2</option>
         <option value="3">3</option>
         <option value="4">4</option>
       </select>
-      ƒ`ƒ…[ƒjƒ“ƒO <!-- ƒ†[ƒU‚É‚Í”ñ•\Ž¦ -->
+      ãƒãƒ¥ãƒ¼ãƒ‹ãƒ³ã‚° <!-- ãƒ¦ãƒ¼ã‚¶ã«ã¯éžè¡¨ç¤º -->
       <select name="tuning" id="tuning" size="1">
         <option value="2">2</option>
         <option value="3">3</option>
         <option value="4">4</option>
       </select>
-      <button type="submit" name="action" value="send">‘—M</button>
+      <button type="submit" name="action" value="send" onclick="sendRequest()">æ±ºå®š</button>
     </form>
     <script>
     function algorithmSelected(value){
