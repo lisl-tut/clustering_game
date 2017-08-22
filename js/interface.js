@@ -98,4 +98,5 @@ canvas.addEventListener('mousedown', onDown, false);
 canvas.addEventListener('mousemove', onMove, false);
 canvas.addEventListener('mouseup', onUp, false);
 
+init();
 <!-- ユーザによる -->
