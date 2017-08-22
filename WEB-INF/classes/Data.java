@@ -12,9 +12,19 @@ public class Data extends HttpServlet{
         response.setContentType("text/plain");       
  
         PrintWriter out = response.getWriter();
+        out.print("{[");
         for(int i = 0; i < numofdata; i++){
-            out.println(Math.random()+"\n\r");
+            out.print("[");
+            out.print(Math.random());
+            out.print(",");
+            out.print(Math.random());
+            if(i == numofdata - 1){
+                out.print("]");
+            }else{
+                out.print("],");
+            }
         }
+        out.print("]}");
     }
 }
 
