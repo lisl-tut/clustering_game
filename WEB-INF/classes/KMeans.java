@@ -7,7 +7,6 @@
  *
 */
 //package com.dataonfocus.clustering;
-package com.dataonfocus.clustering;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -30,6 +29,8 @@ public class KMeans {
 
     private ArrayList<Point> points;
     private ArrayList<Cluster> clusters;
+
+    private String json;
 
     public KMeans() {
         this.points = new ArrayList<Point>();
@@ -88,6 +89,10 @@ public class KMeans {
             Cluster c = (Cluster) clusters.get(i);
             c.plotCluster();
         }
+    }
+
+    public String getJson(){
+       return new String(this.json);
     }
 
     //The process to calculate the K Means, with iterating method.
@@ -160,6 +165,8 @@ public class KMeans {
 
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(out3);
+
+        this.json = json;
 
         System.out.println("\n↓json↓");
         System.out.println(json);

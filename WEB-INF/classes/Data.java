@@ -34,36 +34,28 @@ public class Data extends HttpServlet{
             System.err.println("Exception occured");
         }
 
+        //generate data
+        int cluster_num = Integer.parseInt(request.getParameter("mak"));
+        DataGenerator dg = new DataGenerator(cluster_num);
+                
         //set a streamer
         response.setContentType("text/plain; charset=UTF-8");
         PrintWriter out = response.getWriter();
-	
-        //generate data
-        //int cluter_num = 3;
-        //DataGenerator dg = new DataGenerator(cluster_num);
-        //JSONPARSER(dg.generate());
-        ArrayList<ArrayList<Double>> data = new ArrayList<ArrayList<Double>>();
-        ArrayList<Double> element;
-        final int N = 20;
-        for(int i = 0; i < N; i++){
-            element = new ArrayList<Double>();
-            element.add(Math.random());
-            element.add(Math.random());
-            data.add(element);
-        }
         
         //convert to JSON
         mapper = new ObjectMapper();
-        json = mapper.writeValueAsString(data);
+        json = mapper.writeValueAsString(dg.generate());
         out.println(json);
         out.flush();
         out.close();
 
         //start learning
-
+        KMeans kmeans = new KMeans();
+        kmeans.init();
+        kmeans.calculate();
 
         //conver the result of learning to JSON
-
+        json = kmeans.getJson();
 
         //save as a JSON file
         try{
