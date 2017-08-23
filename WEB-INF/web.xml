@@ -54,4 +54,15 @@
         <servlet-name>Learn</servlet-name>
         <url-pattern>/Learn</url-pattern>
     </servlet-mapping>
+
+
+    <servlet>
+        <servlet-name>JsonTest</servlet-name>
+        <servlet-class>JsonTest</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>JsonTest</servlet-name>
+        <url-pattern>/JsonTest</url-pattern>
+    </servlet-mapping>
+
 </web-app>
