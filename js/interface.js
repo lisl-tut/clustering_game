@@ -11,27 +11,29 @@ function makeColorPosData(x, y, r, normG, normB, i){
 }
 
 function makeUserClusterCenter(){
-  this.g = NaN;
-  this.b = NaN;
+  this.g = null;
+  this.b = null;
 }
 
 function makeUserHistory(id, g, b){
-  this.id = NaN; // クラスタラベル
-  this.g = NaN;
-  this.b = NaN;
+  this.id = null; // クラスタラベル
+  this.g = null;
+  this.b = null;
 }
 
-function makeUserOprHistory(id, x, y){
+function makeUserOprHistory(id, x, y, g, b){
   this.id = id;
   this.x = x;
   this.y = y;
+  this.g = g;
+  this.b = b;
 }
 
 function init() {
   // ユーザー用オブジェクト生成
   
   // JSONデータを配列へ
-  //var testJson = '[{"cluster":0,"point":[0.30293765954862756,0.3849310722222656]},{"cluster":1,"point":[0.08036268578171582,0.20346417834021638]}]';
+  var testJson = '[{"cluster":0,"point":[0.30293765954862756,0.3849310722222656]},{"cluster":1,"point":[0.08036268578171582,0.20346417834021638]}]';
   // JSONデータがないときは線を引くだけ
   //if(typeof testJson === "undefined" || testJson == ""){repaint();return;}
   if(typeof json_str === "undefined" || json_str == ""){repaint();return;}
@@ -60,7 +62,7 @@ function init() {
     colorPosData[index].clusterLabel = dataRecognize(index);
     //colorPosData.push(new makeColorPosData(canvas.width / 2 - objWidth / 2, canvas.height / 2 - objHeight / 2, fixedR, 180, 90));
     // ユーザ操作履歴初期化
-    userOprHistory.push(new makeUserOprHistory(i, initX, initY));
+    userOprHistory.push(new makeUserOprHistory(i, initX, initY, colorPosData[index].g, colorPosData[index].b));
   }
   //console.log(userOprHistory.length);
   // ユーザ操作によるクラスタ中心を生成
@@ -129,10 +131,12 @@ function onUp(e){
       console.log("old:" + oldCL + ", new:" + changeCL);
       console.log(oldCL+",old:"+userClusterCenter[oldCL].g, userClusterCenter[oldCL].b);
       console.log(changeCL+",new:"+userClusterCenter[changeCL].g, userClusterCenter[changeCL].b);
+      // ユーザオブジェクトの履歴保存
+      var changeDataId = colorPosData[colorPosData.length-1].id;
+      userOprHistory.push(new makeUserOprHistory(changeDataId, colorPosData[changeDataId].x, colorPosData[changeDataId].y, colorPosData[changeDataId].g, colorPosData[changeDataId].b));
     }
-    // ユーザオブジェクトの履歴保存
-    
   }
+  console.log("履歴の数"+userOprHistory.length);
 }
 function dataRecognize(i){
   var userClusterLabel;
@@ -183,8 +187,8 @@ function userCalcClusterCenter(changeCL){
     }
   }
   if(count === 0){
-    userClusterCenter[changeCL].g = NaN;
-    userClusterCenter[changeCL].b = NaN;
+    userClusterCenter[changeCL].g = null;
+    userClusterCenter[changeCL].b = null;
   }else{
     console.log("count:"+count+", "+sumG+","+sumG/count);
     userClusterCenter[changeCL].g = sumG/count;
@@ -206,25 +210,25 @@ function drawLine(){
   context.lineTo(canvas.width/2, canvas.height);
   context.stroke();
 }
-function drawCircle(i){
-    // 円を塗りつぶす
-    context.fillStyle = 'rgba('+colorPosData[i].r+','+colorPosData[i].g+','+colorPosData[i].b+',1)';
-    context.beginPath();
-    context.arc(colorPosData[i].x, colorPosData[i].y, radius, 0, Math.PI*2, false);
-    context.fill();
+function drawCircle(i, plotObj){
+  // 円を塗りつぶす
+  context.fillStyle = 'rgba('+plotObj[i].r+','+plotObj[i].g+','+plotObj[i].b+',1)';
+  context.beginPath();
+  context.arc(plotObj[i].x, plotObj[i].y, radius, 0, Math.PI*2, false);
+  context.fill();
     
-    // 円の縁取り
-    context.strokeStyle = 'rgba(0, 0, 0,1)';
-    context.beginPath();
-    context.arc(colorPosData[i].x, colorPosData[i].y, radius, 0, Math.PI*2, false);
-    context.stroke();
+  // 円の縁取り
+  context.strokeStyle = 'rgba(0, 0, 0,1)';
+  context.beginPath();
+  context.arc(colorPosData[i].x, colorPosData[i].y, radius, 0, Math.PI*2, false);
+  context.stroke();
 }
   
 function repaint(){
   context.clearRect(0, 0, canvas.width, canvas.height);
   drawLine();
   for(var i=0; i<colorPosData.length; i++){
-    drawCircle(i);
+    drawCircle(i, colorPosData);
   }
 }
 
@@ -235,7 +239,6 @@ var clusterNum = 4; // 左画面における識別のためのクラスタ数
 var userClusterCenter = []; // ユーザ操作により計算されるクラスタ中心
 var userHistory = []; // ユーザ操作によるクラスタ中心の移動履歴
 var userOprHistory = []; // ユーザ操作によるオブジェクトの移動履歴
-var user
 var canvas = document.getElementById("tutorial");
 var context = canvas.getContext('2d');
 var relX, relY;
