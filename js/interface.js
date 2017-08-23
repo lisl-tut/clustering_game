@@ -28,8 +28,8 @@ function init() {
   // JSONデータがないときは線を引くだけ
   //if(typeof testJson === "undefined" || testJson == ""){repaint();return;}
   if(typeof json_str === "undefined" || json_str == ""){repaint();return;}
-  var gbArray = JSON.parse(testJson);
-  //var gbArray = JSON.parse(json_str);
+  //var gbArray = JSON.parse(testJson);
+  var gbArray = JSON.parse(json_str);
   
   // 決定ボタンを二回目以降押したときのために配列をそれぞれリセット
   if(colorPosData.length > 0){colorPosData = [];}
