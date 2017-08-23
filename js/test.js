@@ -53,7 +53,7 @@ function getLearn(){
     var request = new XMLHttpRequest();
     request.open('GET', url, false);
     request.send(null);
-    document.getElementById("hoge").textContent = request.responseText;
+    document.getElementById("test").textContent = request.responseText;
 }
 
 function rewrite(){

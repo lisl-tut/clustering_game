@@ -14,28 +14,47 @@ public class Data extends HttpServlet{
         throws IOException, ServletException{
 
         //remove result file
-        final String filename = "./result.json";
-        File file = new File(filename);
+        final String resultFilename = "./result.json";
+        File file = new File(resultFilename);
         if(file.exists()) file.delete();
+        //remove request file
+        final String requestFilename = "./request.json";
+        file = new File(requestFilename);
+        if(file.exists()) file.delete();
+        
+        //save a request as file
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(request.getParameterMap());
+        try{
+            file = new File(requestFilename);
+            FileWriter fileWriter = new FileWriter(file);
+            fileWriter.write(json);
+            fileWriter.close();
+        }catch(IOException e){
+            System.err.println("Exception occured");
+        }
 
         //set a streamer
         response.setContentType("text/plain; charset=UTF-8");
         PrintWriter out = response.getWriter();
 	
         //generate data
+        //int cluter_num = 3;
+        //DataGenerator dg = new DataGenerator(cluster_num);
+        //JSONPARSER(dg.generate());
         ArrayList<ArrayList<Double>> data = new ArrayList<ArrayList<Double>>();
         ArrayList<Double> element;
         final int N = 20;
         for(int i = 0; i < N; i++){
             element = new ArrayList<Double>();
-            element.add(Math.random()/0.5);
-            element.add(Math.random()/0.5);
+            element.add(Math.random());
+            element.add(Math.random());
             data.add(element);
         }
         
         //convert to JSON
-        ObjectMapper mapper = new ObjectMapper();
-        String json = mapper.writeValueAsString(data);
+        mapper = new ObjectMapper();
+        json = mapper.writeValueAsString(data);
         out.println(json);
         out.flush();
         out.close();
@@ -48,7 +67,7 @@ public class Data extends HttpServlet{
 
         //save as a JSON file
         try{
-            file = new File(filename);
+            file = new File(resultFilename);
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write(json);
             fileWriter.close();

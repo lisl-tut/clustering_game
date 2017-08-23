@@ -8,8 +8,10 @@ public class HelloWorld extends HttpServlet{
 
         response.setContentType("text/plain");
         PrintWriter out = response.getWriter();
-        out.print("java servlet");
+        out.print("result.json has been deleted.");
 
+        File file = new File("./result.json");
+        file.delete();
     }
 }
 
