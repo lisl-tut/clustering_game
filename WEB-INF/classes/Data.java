@@ -28,8 +28,8 @@ public class Data extends HttpServlet{
         final int N = 20;
         for(int i = 0; i < N; i++){
             element = new ArrayList<Double>();
-            element.add(Math.random());
-            element.add(Math.random());
+            element.add(Math.random()/0.5);
+            element.add(Math.random()/0.5);
             data.add(element);
         }
         

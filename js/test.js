@@ -6,6 +6,8 @@ function sendRequest(){
     document.getElementById("hoge").textContent = request.responseText;
 }
 
+var json_str;
+
 function getData(){
     var form = document.settei
     
@@ -42,6 +44,8 @@ function getData(){
     request.open('GET', url+params, false);
     request.send(null);
     document.getElementById("test").textContent = request.responseText;
+    json_str = request.responseText;
+    init();
 }
 
 function getLearn(){

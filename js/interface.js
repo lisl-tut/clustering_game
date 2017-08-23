@@ -22,8 +22,8 @@ function init() {
   // JSONデータを配列へ
   //var testJson = "[[0.4803801741129671,0.6127016113967985],[0.9584773624254441,0.10916578463266124]]";
   //var gbArray = JSON.parse(testJson);
-  var gbArray = JSON.parse(request.responseText);
- 
+  //var gbArray = JSON.parse(request.responseText);
+  var gbArray = JSON.parse(json_str);
  
   for(var i=0; i<gbArray.length; i++){
     var xMax = canvas.width - radius;
