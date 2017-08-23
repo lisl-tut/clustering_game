@@ -50,7 +50,7 @@ public class Data extends HttpServlet{
         out.close();
 
         //start learning
-        KMeans kmeans = new KMeans(samples);
+        KMeans kmeans = new KMeans(cluster_num, samples);
         kmeans.init();
         kmeans.calculate();
 

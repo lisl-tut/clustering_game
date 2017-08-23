@@ -15,12 +15,14 @@ public class DataGenerator {
         }
         
         public ArrayList<Sample> generate(){
+            double sigma = 0.1;
             System.out.println("generate");
             ArrayList<Sample> cluster_centers = new ArrayList<Sample>();
             System.out.println("cluster_center");
+            double criticalRegion = 2.0;
             for(int k = 0; k < cluster_num; k++){
-                double x = Math.random();
-                double y = Math.random();
+                double x = (1-2*criticalRegion*sigma)*Math.random() + sigma*criticalRegion;
+                double y = (1-2*criticalRegion*sigma)*Math.random() + sigma*criticalRegion;
                 Sample cluster_center = new Sample(x, y, k);
                 cluster_centers.add(cluster_center);
                 cluster_center.print();
@@ -28,7 +30,6 @@ public class DataGenerator {
 
             int sample_num = 20;
             Random rnd = new Random();
-            double sigma = 0.01;
             for(int i = 0; i < sample_num; i++){
                 int ran = rnd.nextInt(cluster_num);
                 double x = cluster_centers.get(ran).get_point(0) + rnorm(sigma);

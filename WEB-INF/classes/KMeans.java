@@ -20,12 +20,12 @@ import static java.awt.SystemColor.info;
 public class KMeans {
 
     //Number of Clusters. This metric should be related to the number of points
-    private int NUM_CLUSTERS = 3;
+    private int NUM_CLUSTERS = 1;
     //Number of Points
     private int NUM_POINTS = 15;
     //Min and Max X and Y
     private static final int MIN_COORDINATE = 0;
-    private static final int MAX_COORDINATE = 10;
+    private static final int MAX_COORDINATE = 1;
 
     private ArrayList<Point> points;
     private ArrayList<Cluster> clusters;
@@ -34,7 +34,8 @@ public class KMeans {
 
     private String json;
 
-    public KMeans(ArrayList<Sample> data) {
+    public KMeans(int k, ArrayList<Sample> data) {
+        this.NUM_CLUSTERS = k;
         this.generatedData = data;
         this.points = new ArrayList<Point>();
         this.clusters = new ArrayList();
