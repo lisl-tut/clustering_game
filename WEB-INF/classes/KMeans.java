@@ -30,7 +30,15 @@ public class KMeans {
     private ArrayList<Point> points;
     private ArrayList<Cluster> clusters;
 
+    private ArrayList<Sample> generatedData;
+
     private String json;
+
+    public KMeans(ArrayList<Sample> data) {
+        this.generatedData = data;
+        this.points = new ArrayList<Point>();
+        this.clusters = new ArrayList();
+    }
 
     public KMeans() {
         this.points = new ArrayList<Point>();
@@ -44,19 +52,6 @@ public class KMeans {
         kmeans.calculate();
 
         Out out = new Out();
-        //out.out1 = "outA";
-        //out.out2 = "outB";
-
-
-
-
-        /*
-        ObjectMapper mapper = new ObjectMapper();
-        String json = mapper.writeValueAsString(out);
-
-        System.out.println("\n↓json↓");
-        System.out.println(json);
-        */
     }
 
     //Initializes the process
@@ -66,7 +61,12 @@ public class KMeans {
         double testpointY = 2;
 
         //pointの設定
-        points = Point.createRandomPoints(MIN_COORDINATE,MAX_COORDINATE,NUM_POINTS);
+        //points = Point.createRandomPoints(MIN_COORDINATE,MAX_COORDINATE,NUM_POINTS);
+
+        for(Sample sample : generatedData){
+            Point point = new Point(sample.point.get(0), sample.point.get(1));
+            points.add(point);
+        }
 
         //Create Clusters
         //Set Random Centroids

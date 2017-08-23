@@ -3,8 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package datagenerator;
-
 import java.util.ArrayList;
 
 /**
@@ -12,14 +10,14 @@ import java.util.ArrayList;
  * @author user
  */
 public class Sample {
-    int cluster;
-    
-    ArrayList<Double> point = new ArrayList<Double>();
-	Sample(double x, double y, int cluster) {
-                this.cluster = cluster;
-                point.add(x);
-                point.add(y);
-        }
+    public int cluster; 
+    public ArrayList<Double> point = new ArrayList<Double>();
+
+    Sample(double x, double y, int cluster) {
+        this.cluster = cluster;
+        point.add(x);
+        point.add(y);
+    }
         
     public double get_point(int index){
         return point.get(index);

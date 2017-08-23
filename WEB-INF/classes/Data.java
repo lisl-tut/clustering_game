@@ -37,20 +37,20 @@ public class Data extends HttpServlet{
         //generate data
         int cluster_num = Integer.parseInt(request.getParameter("mak"));
         DataGenerator dg = new DataGenerator(cluster_num);
-                
+        ArrayList<Sample> samples = dg.generate();        
         //set a streamer
         response.setContentType("text/plain; charset=UTF-8");
         PrintWriter out = response.getWriter();
         
         //convert to JSON
         mapper = new ObjectMapper();
-        json = mapper.writeValueAsString(dg.generate());
+        json = mapper.writeValueAsString(samples);
         out.println(json);
         out.flush();
         out.close();
 
         //start learning
-        KMeans kmeans = new KMeans();
+        KMeans kmeans = new KMeans(samples);
         kmeans.init();
         kmeans.calculate();
 
