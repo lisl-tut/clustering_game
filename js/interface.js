@@ -14,17 +14,28 @@ function makeUserClusterCenter(){
   this.b = NaN;
 }
 
+function makeUserHistory(id, g, b){
+  this.id = NaN; // クラスタラベル
+  this.g = NaN;
+  this.b = NaN;
+}
+
 function init() {
-  //objWidth = 50;  objHeight = 50;
-  radius = 30;
   // ユーザー用オブジェクト生成
   
   // JSONデータを配列へ
   //var testJson = "[[0.4803801741129671,0.6127016113967985],[0.9584773624254441,0.10916578463266124]]";
-  //var gbArray = JSON.parse(testJson);
-  //var gbArray = JSON.parse(request.responseText);
-  var gbArray = JSON.parse(json_str);
- 
+  // JSONデータがないときは線を引くだけ
+  //if(typeof testJson === "undefined" || testJson == ""){repaint();return;}
+  if(typeof json_str === "undefined" || json_str == ""){repaint();return;}
+  var gbArray = JSON.parse(testJson);
+  //var gbArray = JSON.parse(json_str);
+  
+  // 決定ボタンを二回目以降押したときのために配列をそれぞれリセット
+  if(colorPosData.length > 0){colorPosData = [];}
+  if(userClusterCenter.length > 0){userClusterCenter = [];}
+  if(userHistory.length > 0){userHistory = [];}
+  // データ点の配列を生成
   for(var i=0; i<gbArray.length; i++){
     var xMax = canvas.width - radius;
     var xMin = radius;
@@ -40,8 +51,14 @@ function init() {
     colorPosData[index].clusterLabel = dataRecognize(index);
     //colorPosData.push(new makeColorPosData(canvas.width / 2 - objWidth / 2, canvas.height / 2 - objHeight / 2, fixedR, 180, 90));
   }
+  // ユーザ操作によるクラスタ中心を生成
   for(var i=0; i<clusterNum; i++){
-    userClusterCenter.push(new makeUserClusterCenter());
+    userClusterCenter.push(new makeUserClusterCenter());  // 生成
+    userCalcClusterCenter(i);
+    // 初期クラスタを保存
+    userHistory.push(new makeUserHistory(i, userClusterCenter[i].G, userClusterCenter[i].B));
+    //console.log("yuz"+userHistory.length);
+    console.log(i + ", " +userClusterCenter[i].normG +"," + userClusterCenter[i].normB);
   }
   repaint();
 }
@@ -84,11 +101,16 @@ function onMove(e){
   }
 }
 function onUp(e){
-  dragging = false;
-  // クラスタ所属判定
-  userDataAllocate();
-  // クラスタ中心の記録
-  userCalcClusterCenter();
+  if(dragging){
+    dragging = false;
+    // クラスタ所属判定
+    var changeCL = userDataAllocate();
+    //console.log("変更："+changeCL);
+    // クラスタ中心の再計算
+    userCalcClusterCenter(changeCL);
+    // クラスタ中心の変更履歴を保存
+    userHistory.push(new makeUserHistory(changeCL, userClusterCenter[changeCL].G, userClusterCenter[changeCL].B));
+  }
 }
 function dataRecognize(i){
   var userClusterLabel;
@@ -120,14 +142,26 @@ function dataRecognize(i){
   return userClusterLabel;
 }
 function userDataAllocate(){
-  // ユーザはいくつに分けるか知っている？
   console.log(selectedIndex);
   var selectedIndex = colorPosData.length - 1;
-  var userClusterLabel = dataRecognize(selectedIndex);
+  colorPosData[selectedIndex].clusterLabel = dataRecognize(selectedIndex);
+  return colorPosData[selectedIndex].clusterLabel;
 }
-function userCalcClusterCenter(){
+function userCalcClusterCenter(changeCL){
   // クラスタ中心の計算
   // クラスタ中心の履歴を記録
+  var sumG = 0;
+  var sumB = 0;
+  var count = 0;
+  for(var i=0; i<colorPosData.length; i++){
+    if(colorPosData[i].clusterLabel == changeCL){
+      sumG += colorPosData[i].normG;
+      sumB += colorPosData[i].normB;
+      count++;
+    }
+  }
+  userClusterCenter[changeCL].normG = sumG/count;
+  userClusterCenter[changeCL].normB = sumB/count;
 }
 
 function drawLine(){
@@ -171,10 +205,11 @@ function repaint(){
 var colorPosData = [];  // データ点オブジェクトを格納
 var clusterNum = 4; // 左画面における識別のためのクラスタ数
 var userClusterCenter = []; // ユーザ操作により計算されるクラスタ中心
+var userHistory = [];
 var canvas = document.getElementById("tutorial");
 var context = canvas.getContext('2d');
 var relX, relY;
-var radius;
+var radius = 30;
 var dragging = false;
 var fixedR = 66;
 
