@@ -96,7 +96,7 @@ public class KMeans {
             
             clusterLabels = new ArrayList<>();
             for(Point point : points) clusterLabels.add(point.getClusterLabel());
-            out.setToIter(currentCentroids, clusterLabels);
+            out.setToIter(clusters.size(), currentCentroids, clusterLabels);
             
             e = 0.0;
             for(int i = 0; i < lastCentroids.size(); i++)

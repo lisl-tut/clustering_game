@@ -35,8 +35,8 @@ public class Data extends HttpServlet{
         }
 
         //generate data
-        int cluster_num = Integer.parseInt(request.getParameter("mak"));
-        DataGenerator dg = new DataGenerator(cluster_num);
+        int clusterMakeNum = Integer.parseInt(request.getParameter("mak"));
+        DataGenerator dg = new DataGenerator(clusterMakeNum);
         ArrayList<Sample> samples = dg.generate();        
         //set a streamer
         response.setContentType("text/plain; charset=UTF-8");
@@ -50,12 +50,20 @@ public class Data extends HttpServlet{
         out.close();
 
         //start learning
-        KMeans kmeans = new KMeans(cluster_num, samples, 0.0, 1.0);
-        kmeans.init();
-        kmeans.fit();
+        int k = Integer.parseInt(request.getParameter("clu"));
+        double lambda = Integer.parseInt(request.getParameter("thr"));
+        Clustering clustering;
+        if(Integer.parseInt(request.getParameter("alg")) == 0){
+            clustering = new Clustering(samples, 0.0, 1.0, "K", k);
+        }else{
+            clustering = new Clustering(samples, 0.0, 1.0, "DP", lambda*0.1);
+        }
+        
+        clustering.init();
+        clustering.fit();
 
         //conver the result of learning to JSON
-        json = kmeans.getJson();
+        json = clustering.getJson();
 
         //save as a JSON file
         try{
