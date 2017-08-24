@@ -12,7 +12,7 @@ public class Clustering {
     private double minCoordinate = 0;
     private double maxCordinate = 1;
 
-    private int k = 3;
+    private int k = 1;
     private double lambda = 0.2;
     
     private ArrayList<Point> points;
@@ -54,7 +54,7 @@ public class Clustering {
 
         DataGenerator dg = new DataGenerator(3);
         
-        Clustering kmeans = new Clustering(dg.generate(), 0.0, 1.0, "K", 3);
+        Clustering kmeans = new Clustering(dg.generate(), 0.0, 1.0, "DP", 0.2);
         //KMeans kmeans = new KMeans();
         kmeans.init();
         kmeans.fit();
@@ -76,6 +76,7 @@ public class Clustering {
 
         //Create Clusters + Set Random Centroids
         for (int i = 0; i < k; i++) {
+            System.out.println(i);
             Cluster cluster = new Cluster(i);
             Point centroid;
             if(generatedData == null){
@@ -101,11 +102,11 @@ public class Clustering {
         Out out = new Out();
 
         while(e != 0) {
-
+            System.out.println(iteration);
             clearClusters();
             lastCentroids = getCentroids();
 
-            assignCluster();
+            assignCluster(iteration);
             calculateCentroids();
 
             currentCentroids = getCentroids();
@@ -115,8 +116,12 @@ public class Clustering {
             out.setToIter(clusters.size(), currentCentroids, clusterLabels);
             
             e = 0.0;
-            for(int i = 0; i < lastCentroids.size(); i++)
-                e += Point.distance(lastCentroids.get(i),currentCentroids.get(i));
+            if(currentCentroids.size() == lastCentroids.size()){
+                for(int i = 0; i < lastCentroids.size(); i++)
+                    e += Point.distance(lastCentroids.get(i),currentCentroids.get(i));
+            }else{
+                e = Double.MAX_VALUE;
+            }
             iteration++;
         }
 
@@ -139,7 +144,7 @@ public class Clustering {
         return centroids;
     }
 
-    private void assignCluster() {       
+    private void assignCluster(int iter) {       
         double min;
         Cluster minCluster = null;
         double distance;
@@ -154,9 +159,30 @@ public class Clustering {
                 }
             }
             assert minCluster != null : "minCluster is null";
-            point.setCluster(minCluster.getId());
-            clusters.get(minCluster.getId()).addPoint(point);
+            if(this.method.equals("DP") && min > lambda){
+                k++;
+                Cluster cluster = new Cluster(k);
+                point.setCluster(k);
+                cluster.centroid = point;
+                cluster.points.add(point);
+                clusters.add(cluster);
+                minCluster.removePoint(point);
+                Cluster removeCluster = null;
+                if(iter != 1){
+                    for(Cluster retCluster : clusters){
+                        if(cluster.points.isEmpty()){
+                            removeCluster = retCluster;
+                        }
+                    }
+                    clusters.remove(removeCluster);
+                }
+            }else{
+                point.setCluster(minCluster.getId());
+                minCluster.addPoint(point);
+            }
+
         }
+        
     }
 
     private void calculateCentroids() {
