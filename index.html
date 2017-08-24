@@ -2,6 +2,7 @@
   <head>
     <meta charset="UTF-8">
     <title>Canvas tutorial</title>
+    <link rel="stylesheet" href="./css/style3.css" type="text/css" />
     <script type="text/javascript" src="./js/test.js" charset="utf-8"></script>
     <script type="text/javascript">
       function draw(){
@@ -16,42 +17,59 @@
     </style>
   </head>
   <body onload="draw();">
+
+<div id="div1">
+
     <canvas id="tutorial" width="400" height="300"></canvas>
     <canvas id="tutorial" width="400" height="300"></canvas>
-    
+</div>
+<div id="div2">
+<ul>
     <form name="settei" method="get">
+<li>
       アルゴリズムの種類
       <select name="algorithm" id="algorithm" size="1" onChange="algorithmSelected(value)">
         <option value="0" id="kmeans">K-means</option>
         <option value="1" id="dpmeans">DP-means</option>
       </select>
+    </li>
+    <li>
       クラスタ数 <!-- ユーザには非表示 -->
       <select name="clusterNum" id="clusterNum" size="1">
         <option value="2">2</option>
         <option value="3">3</option>
         <option value="4">4</option>
       </select>
+    </li>
+    <li>
       ペナルティパラメータ <!-- ユーザには非表示? -->
       <select name="threshold" id="threshold" size="1" disabled=true>
         <option value="2">2</option>
         <option value="3">3</option>
         <option value="4">4</option>
       </select>
+    </li>
+    <li>
       生成するクラスタ数 <!-- ユーザには非表示 -->
       <select name="makeClusterNum" id="makeClusterNum" size="1"> <!--style="visibility:hidden">!-->
         <option value="2">2</option>
         <option value="3">3</option>
         <option value="4">4</option>
       </select>
+    </li>
+    <li>
       チューニング <!-- ユーザには非表示 -->
       <select name="tuning" id="tuning" size="1">
         <option value="0">good</option>
         <option value="1">bad</option>
         <option value="2">random</option>
       </select>
+    </li>
       <button type="button" name="action" value="send" onclick="getData()">決定</button>
       <button type="button" name="kotaeawase" value="send" onclick="getLearn()">答え合わせ</button>
     </form>
+    </ul>
+
     <script>
     function algorithmSelected(value){
       var kmeansObj = document.getElementById("clusterNum");
@@ -69,6 +87,7 @@
     </script>
     <script type="text/javascript" src="./js/interface.js" charset="utf-8"></script>
     <script type="text/javascript" src="./js/animation.js" charset="utf-8"></script>
+    </div>
     <div id="request">request</div>
     <div id="test">test area</div>
     <a href="test.html">test page</a>
