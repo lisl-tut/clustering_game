@@ -3,7 +3,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 
-public class Clustering {
+public class KMeans {
     
     //Attributes for test
     private final static int NUM_POINTS = 15;
@@ -12,8 +12,7 @@ public class Clustering {
     private double minCoordinate = 0;
     private double maxCordinate = 1;
 
-    private int k = 3;
-    private double lambda = 0.2;
+    private int numClusters = 3;
     
     private ArrayList<Point> points;
     private ArrayList<Cluster> clusters;
@@ -21,40 +20,25 @@ public class Clustering {
     private ArrayList<Sample> generatedData = null;
 
     private String json;
-    
-    private String method = "K";
 
-    public Clustering() {
+    public KMeans() {
         this.points = new ArrayList<Point>();
         this.clusters = new ArrayList();
     }
     
-    public Clustering(ArrayList<Sample> data, double min, double max) {
+    public KMeans(int k, ArrayList<Sample> data, double min, double max) {
         this();
+        this.numClusters = k;
         this.generatedData = data;
         this.minCoordinate = min;
         this.maxCordinate = max;
-    }
-    
-    public Clustering(ArrayList<Sample> data, double min, double max, String method, int k) {
-        this(data, min, max);
-        assert method.equals("K") || method.equals("k");
-        this.method = "K";
-        this.k = k;
-    }
-    
-    public Clustering(ArrayList<Sample> data, double min, double max, String method, double lambda) {
-        this(data, min, max);
-        assert method.equals("DP") || method.equals("dp");
-        this.method = "DP";
-        this.lambda = lambda;
     }
 
     public static void main(String[] args)  throws JsonProcessingException {
 
         DataGenerator dg = new DataGenerator(3);
         
-        Clustering kmeans = new Clustering(dg.generate(), 0.0, 1.0, "K", 3);
+        KMeans kmeans = new KMeans(3, dg.generate(), 0.0, 1.0);
         //KMeans kmeans = new KMeans();
         kmeans.init();
         kmeans.fit();
@@ -75,7 +59,7 @@ public class Clustering {
         }
 
         //Create Clusters + Set Random Centroids
-        for (int i = 0; i < k; i++) {
+        for (int i = 0; i < numClusters; i++) {
             Cluster cluster = new Cluster(i);
             Point centroid;
             if(generatedData == null){
@@ -130,7 +114,7 @@ public class Clustering {
     }
 
     private ArrayList<Point> getCentroids() {
-        ArrayList<Point> centroids = new ArrayList<Point>(k);
+        ArrayList<Point> centroids = new ArrayList<Point>(numClusters);
         for(Cluster cluster : clusters) {
             Point aux = cluster.getCentroid();
             Point point = new Point(aux.getX(),aux.getY());

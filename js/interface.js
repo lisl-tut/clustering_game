@@ -220,7 +220,7 @@ function drawCircle(i, plotObj){
   // 円の縁取り
   context.strokeStyle = 'rgba(0, 0, 0,1)';
   context.beginPath();
-  context.arc(plotObj[i].x, plotObj[i].y, radius, 0, Math.PI*2, false);
+  context.arc(colorPosData[i].x, colorPosData[i].y, radius, 0, Math.PI*2, false);
   context.stroke();
 }
   

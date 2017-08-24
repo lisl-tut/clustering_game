@@ -56,7 +56,6 @@ function getLearn(){
     request.send(null);
     learn_json_str = request.responseText;
     document.getElementById("test").textContent = learn_json_str;
-    playAnime();
 }
 
 function rewrite(){
