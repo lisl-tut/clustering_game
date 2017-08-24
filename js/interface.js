@@ -36,10 +36,10 @@ function init() {
   var testJson = '[{"cluster":0,"point":[0.30293765954862756,0.3849310722222656]},{"cluster":1,"point":[0.08036268578171582,0.20346417834021638]}]';
   // JSONデータがないときは線を引くだけ
   //if(typeof testJson === "undefined" || testJson == ""){repaint();return;}
-  if(typeof json_str === "undefined" || json_str == ""){repaint();return;}
+  if(typeof data_json_str === "undefined" || data_json_str == ""){repaint();return;}
   //var gbArray = JSON.parse(testJson);
 //  console.log("jsonTest:"+gbArray[1]["cluster"]);
-  var gbArray = JSON.parse(json_str);
+  var gbArray = JSON.parse(data_json_str);
   
   // 決定ボタンを二回目以降押したときのために配列をそれぞれリセット
   if(colorPosData.length > 0){colorPosData = [];}

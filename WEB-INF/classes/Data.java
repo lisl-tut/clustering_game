@@ -36,6 +36,8 @@ public class Data extends HttpServlet{
 
         //generate data
         int clusterMakeNum = Integer.parseInt(request.getParameter("mak"));
+        if(clusterMakeNum == 0)
+            clusterMakeNum = (int)(Math.random()*3) + 2;
         DataGenerator dg = new DataGenerator(clusterMakeNum);
         ArrayList<Sample> samples = dg.generate();        
         //set a streamer

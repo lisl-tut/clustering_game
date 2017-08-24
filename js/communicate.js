@@ -6,7 +6,8 @@ function sendRequest(){
     document.getElementById("hoge").textContent = request.responseText;
 }
 
-var json_str;
+var data_json_str;
+var learn_json_str;
 
 function getData(){
     var form = document.settei
@@ -43,8 +44,8 @@ function getData(){
     var request = new XMLHttpRequest();
     request.open('GET', url+params, false);
     request.send(null);
-    document.getElementById("test").textContent = request.responseText;
-    json_str = request.responseText;
+    data_json_str = request.responseText;
+    document.getElementById("test").textContent = data_json_str;
     init();
 }
 
@@ -53,7 +54,8 @@ function getLearn(){
     var request = new XMLHttpRequest();
     request.open('GET', url, false);
     request.send(null);
-    document.getElementById("test").textContent = request.responseText;
+    learn_json_str = request.responseText;
+    document.getElementById("test").textContent = learn_json_str;
 }
 
 function rewrite(){
