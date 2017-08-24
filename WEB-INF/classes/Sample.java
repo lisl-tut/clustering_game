@@ -1,28 +1,29 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 import java.util.ArrayList;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-/**
- *
- * @author user
- */
 public class Sample {
     public int cluster; 
     public ArrayList<Double> point = new ArrayList<Double>();
 
+    private final static int X = 0;
+    private final static int Y = 1;
+    
     Sample(double x, double y, int cluster) {
         this.cluster = cluster;
         point.add(x);
         point.add(y);
     }
-        
-    public double get_point(int index){
-        return point.get(index);
+    
+    @JsonIgnore      
+    public double getX(){
+        return point.get(X);
     }
-        
+
+    @JsonIgnore
+    public double getY(){
+        return point.get(Y);
+    }
+    
     public void print(){
         System.out.println("x = " + point.get(0) + ", y = " + point.get(1) + ", cluster=" + this.cluster);
     }
@@ -35,5 +36,4 @@ public class Sample {
         sample.print();
     }
    
-
 }

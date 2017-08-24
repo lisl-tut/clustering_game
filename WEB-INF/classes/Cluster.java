@@ -1,12 +1,8 @@
 import java.util.ArrayList;
-import java.util.List;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Cluster {
 
-    public ArrayList<Point> points;
+    public ArrayList<Point> points; //including history
     public Point centroid;
     public int id;
 
@@ -45,17 +41,14 @@ public class Cluster {
         points.clear();
     }
 
-    public void plotCluster() {
-
-
-
-        System.out.println("[Cluster: " + id+"]");
-        System.out.println("[Centroid: " + centroid + "]");
-        System.out.println("[Points: \n");
-        for(Point p : points) System.out.println(p);
-        System.out.println("]");
-
-
+    @Override
+    public String toString() {
+        String str = "";
+        str += "[Cluster: " + id +"]\n";
+        str += "[Centroid: " + centroid + "]\n";
+        str += "[Points: \n";
+        for(Point p : points) str += p + "\n";
+        str += "]\n";
+        return str;
     }
-
 }

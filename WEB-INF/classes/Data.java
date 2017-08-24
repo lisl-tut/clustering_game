@@ -50,9 +50,9 @@ public class Data extends HttpServlet{
         out.close();
 
         //start learning
-        KMeans kmeans = new KMeans(cluster_num, samples);
+        KMeans kmeans = new KMeans(cluster_num, samples, 0.0, 1.0);
         kmeans.init();
-        kmeans.calculate();
+        kmeans.fit();
 
         //conver the result of learning to JSON
         json = kmeans.getJson();
