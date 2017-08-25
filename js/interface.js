@@ -16,9 +16,9 @@ function makeUserClusterCenter(){
 }
 
 function makeUserHistory(id, g, b){
-  this.id = null; // クラスタラベル
-  this.g = null;
-  this.b = null;
+  this.id = id; // クラスタラベル
+  this.g = g;
+  this.b = b;
 }
 
 function makeUserOprHistory(id, x, y, g, b){
@@ -32,7 +32,7 @@ function makeUserOprHistory(id, x, y, g, b){
 function init() {
   //leftFlag = true;
   // ユーザー用オブジェクト生成
-
+  
   // JSONデータを配列へ
   //var testJson = '[{"cluster":0,"point":[0.30293765954862756,0.3849310722222656]},{"cluster":1,"point":[0.08036268578171582,0.20346417834021638]}]';
   //var testJson = '[{"cluster":0,"point":[0.30293765954862756,0.3849310722222656]},{"cluster":1,"point":[0.5,0.9]}]';
@@ -42,7 +42,7 @@ function init() {
  // var gbArray = JSON.parse(testJson);
 //  console.log("jsonTest:"+gbArray[1]["cluster"]);
   var gbArray = JSON.parse(data_json_str);
-
+  
   // 決定ボタンを二回目以降押したときのために配列をそれぞれリセット
   if(colorPosData.length > 0){colorPosData = [];}
   if(userClusterCenter.length > 0){userClusterCenter = [];}
@@ -57,7 +57,7 @@ function init() {
     var yMin = radius;
     var initX = Math.floor( Math.random() * (xMax + 1 - xMin) ) + xMin ;
     var initY = Math.floor( Math.random() * (yMax + 1 - yMin) ) + xMin ;
-
+    
     //var initG = Math.random();
     //var initB = Math.random();
     colorPosData.push(new makeColorPosData(initX, initY, fixedR, gbArray[i]["point"][0], gbArray[i]["point"][1], i));
@@ -73,7 +73,8 @@ function init() {
     userClusterCenter.push(new makeUserClusterCenter());  // 生成
     userCalcClusterCenter(i);
     // 初期クラスタを保存
-    userHistory.push(new makeUserHistory(i, userClusterCenter[i].g, userClusterCenter[i].b));
+    userHistory.push(new makeUserHistory(i, Math.round(userClusterCenter[i].g*255), Math.round(userClusterCenter[i].b*255)));
+//	alert(userHistory[i].id+",g"+userHistory[i].g+","+userHistory[i].b);
     //console.log("yuz"+userHistory.length);
     console.log(i + ", " +userClusterCenter[i].g +"," + userClusterCenter[i].b);
   }
@@ -89,7 +90,7 @@ function onDown(e) {
   var selectedIndex;
   for(var i=0; i<colorPosData.length; i++){
     // 長方形の判定
-    /*if (colorPosData[i].x < x && (colorPosData[i].x + objWidth) > x
+    /*if (colorPosData[i].x < x && (colorPosData[i].x + objWidth) > x 
       && colorPosData[i].y < y && (colorPosData[i].y + objHeight) > y) {*/
     // 円の判定
     if(Math.sqrt(Math.pow(colorPosData[i].x-x,2)+Math.pow(colorPosData[i].y-y,2)) < radius){
@@ -123,21 +124,32 @@ function onUp(e){
     dragging = false;
     // クラスタ所属判定
     var changeCL = userDataAllocate();
+	
+	var stateClusterNum = 4;
+	// 現在のクラスタ中心をすべて保存
+	for(var i=0; i<userClusterCenter.length; i++){
+      userCalcClusterCenter(i);
+      userHistory.push(new makeUserHistory(i, Math.round(userClusterCenter[i].g*255), Math.round(userClusterCenter[i].b*255)));
+	}
+	for(var i=0; i<4-userClusterCenter.length; i++){
+	  userHistory.push(new makeUserHistory(null, null, null));
+	}
+	
     // 所属クラスタが変わった場合のみ
-    if(oldCL !== changeCL){
+    /*if(oldCL !== changeCL){
       // クラスタラベルが変わったデータ点の旧所属クラスタと新所属クラスタの中心点を再計算&履歴を保存
       // クラスタ中心の変更履歴を保存
       userCalcClusterCenter(changeCL);
-      userHistory.push(new makeUserHistory(changeCL, userClusterCenter[changeCL].g, userClusterCenter[changeCL].b));
+      userHistory.push(new makeUserHistory(changeCL, Math.round(userClusterCenter[changeCL].g*255), Math.round(userClusterCenter[changeCL].b*255)));
       userCalcClusterCenter(oldCL);
-      userHistory.push(new makeUserHistory(oldCL, userClusterCenter[oldCL].g, userClusterCenter[oldCL].b));
+      userHistory.push(new makeUserHistory(oldCL, Math.round(userClusterCenter[oldCL].g*255), Math.round(userClusterCenter[oldCL].b*255)));
       console.log("old:" + oldCL + ", new:" + changeCL);
       console.log(oldCL+",old:"+userClusterCenter[oldCL].g, userClusterCenter[oldCL].b);
       console.log(changeCL+",new:"+userClusterCenter[changeCL].g, userClusterCenter[changeCL].b);
       // ユーザオブジェクトの履歴保存
       var changeDataId = colorPosData[colorPosData.length-1].id;
       userOprHistory.push(new makeUserOprHistory(changeDataId, colorPosData[changeDataId].x, colorPosData[changeDataId].y, colorPosData[changeDataId].g, colorPosData[changeDataId].b));
-    }
+    }*/
   }
   console.log("履歴の数"+userOprHistory.length);
 }
@@ -206,7 +218,7 @@ function drawLine(){
   context.moveTo(0, canvas.height/2);
   context.lineTo(canvas.width, canvas.height/2);
   context.stroke();
-
+  
   // 縦線
   context.beginPath();
   context.moveTo(canvas.width/2, 0);
@@ -219,14 +231,14 @@ function drawCircle(i, plotObj){
   context.beginPath();
   context.arc(plotObj[i].x, plotObj[i].y, radius, 0, Math.PI*2, false);
   context.fill();
-
+    
   // 円の縁取り
   context.strokeStyle = 'rgba(0, 0, 0,1)';
   context.beginPath();
   context.arc(colorPosData[i].x, colorPosData[i].y, radius, 0, Math.PI*2, false);
   context.stroke();
 }
-
+  
 function repaint(){
   context.clearRect(0, 0, canvas.width, canvas.height);
   drawLine();
