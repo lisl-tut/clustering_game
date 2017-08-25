@@ -1,5 +1,6 @@
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.lang.reflect.Array;
 
 import java.util.ArrayList;
 
@@ -76,7 +77,6 @@ public class Clustering {
 
         //Create Clusters + Set Random Centroids
         for (int i = 0; i < k; i++) {
-            System.out.println(i);
             Cluster cluster = new Cluster(i);
             Point centroid;
             if(generatedData == null){
@@ -102,7 +102,6 @@ public class Clustering {
         Out out = new Out();
 
         while(e != 0) {
-            System.out.println(iteration);
             clearClusters();
             lastCentroids = getCentroids();
 
@@ -113,7 +112,7 @@ public class Clustering {
             
             clusterLabels = new ArrayList<>();
             for(Point point : points) clusterLabels.add(point.getClusterLabel());
-            out.setToIter(clusters.size(), currentCentroids, clusterLabels);
+            out.setToIter(getLabels(), currentCentroids, clusterLabels);
             
             e = 0.0;
             if(currentCentroids.size() == lastCentroids.size()){
@@ -142,6 +141,14 @@ public class Clustering {
             centroids.add(point);
         }
         return centroids;
+    }
+    
+    private ArrayList<Integer> getLabels(){
+        ArrayList<Integer> labels = new ArrayList<Integer>();
+        for(Cluster cluster : clusters){
+            labels.add(cluster.getId());
+        }
+        return labels;
     }
 
     private void assignCluster(int iter) {       
