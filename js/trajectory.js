@@ -1,16 +1,21 @@
 var colorPosDataForTrajectory = [];
 
-//colorPosData
-//userOprHistory
-
 function drawTrajectory(iter){
-  for(var i=0; i<colorPosDataForTrajectory.length; i++){
+  for(var i=0; i<colorPosDataForTrajectory[iter].length; i++){
     drawCircle(i, colorPosDataForTrajectory);
   }
 }
 
+//call once
 function setTrajectory(){
-  for(var i = 0; i < u; i++){
-
+  var colorPosDataTmp = $.extend(true, {}, colorPosData);
+  for(var i = 0; i < userOprHistory.length; i++){
+    for(var j = 0; j < colorPosDataTmp; j++){
+      if(colorPosDataTmp[j] == userOprHistory[i].id){
+        colorPosDataTmp[j].x = userOprHistory[i].x;
+        colorPosDataTmp[j].y = userOprHistory[i].y;
+      }
+    }
+    colorPosDataForTrajectory.push(colorPosDataTmp);
   }
 }
