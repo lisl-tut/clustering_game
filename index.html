@@ -47,7 +47,7 @@
               </li>
               <li>
                 クラスタ数 <!-- ユーザには非表示 -->
-                <select name="clusterNum" id="clusterNum" size="1">
+                <select name="clusterNum" id="clusterNum" size="1" disabled=false>
                   <option value="2">K=2</option>
                   <option value="3">K=3</option>
                   <option value="4">K=4</option>
@@ -82,6 +82,8 @@
               <a class="waves-effect blue accent-2 btn" name="kotaeawase" value="send" onclick="getLearn()">答え合わせ</a>
               <a class="waves-effect blue accent-2 btn" name="reloadbutton" value="send" onclick="location.reload()">リロード</a>
 
+
+
             </form>
           </ul>
         </div>
@@ -96,7 +98,13 @@
     <div id="request">request</div>
     <div id="test">test area</div>
 
+
+
     <script>
+    window.onload = function () {
+      var kmeansObj = document.getElementById("clusterNum");
+      kmeansObj.disabled = false;
+    };
       function algorithmSelected(value){
         var kmeansObj = document.getElementById("clusterNum");
         var dpmeansObj = document.getElementById("threshold");
@@ -109,8 +117,12 @@
             dpmeansObj.disabled = false;
             document.getElementById("clusterNum").value = "2";
         }
+        location.reload();
       }
+
+
     </script>
+
     <script type="text/javascript" src="./js/interface.js" charset="utf-8"></script>
     <script type="text/javascript" src="./js/animation.js" charset="utf-8"></script>
 
@@ -122,6 +134,8 @@
 
     <!-- Import my script -->
     <script type="text/javascript" src="src/myScript.js"></script>
+
+
 
   </body>
 </html>
