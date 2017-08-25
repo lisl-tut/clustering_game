@@ -42,7 +42,9 @@ function getData(){
     var tun_value = form.tuning.options[index].value;
     params += "&tun=" + tun_value;
 
-    document.getElementById("request").textContent = url+params;
+    if(DEBUG_MODE){
+      document.getElementById("request").textContent = url+params;
+    }
     var request = new XMLHttpRequest();
     request.open('GET', url+params, false);
     request.send(null);
