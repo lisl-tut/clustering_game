@@ -74,7 +74,11 @@ function init() {
     userClusterCenter.push(new makeUserClusterCenter());  // 生成
     userCalcClusterCenter(i);
     // 初期クラスタを保存
-    userHistory.push(new makeUserHistory(i, Math.round(userClusterCenter[i].g*255), Math.round(userClusterCenter[i].b*255)));
+	if(userClusterCenter[i].g === null && userClusterCenter[i].b === null){ 
+		userHistory.push(new makeUserHistory(i, null, null));
+	}else{
+		userHistory.push(new makeUserHistory(i, Math.round(userClusterCenter[i].g*255), Math.round(userClusterCenter[i].b*255)));
+	}
 //	alert(userHistory[i].id+",g"+userHistory[i].g+","+userHistory[i].b);
     //console.log("yuz"+userHistory.length);
     console.log(i + ", " +userClusterCenter[i].g +"," + userClusterCenter[i].b);
@@ -132,29 +136,13 @@ function onUp(e){
 	// 現在のクラスタ中心をすべて保存
 	for(var i=0; i<userClusterCenter.length; i++){
       userCalcClusterCenter(i);
-      userHistory.push(new makeUserHistory(i, Math.round(userClusterCenter[i].g*255), Math.round(userClusterCenter[i].b*255)));
+      if(userClusterCenter[i].g === null && userClusterCenter[i].b === null){ 
+	    userHistory.push(new makeUserHistory(i, null, null));
+	  }else{
+	    userHistory.push(new makeUserHistory(i, Math.round(userClusterCenter[i].g*255), Math.round(userClusterCenter[i].b*255)));
+	  }
 	}
-	for(var i=0; i<4-userClusterCenter.length; i++){
-	  userHistory.push(new makeUserHistory(null, null, null));
-	}
-	//for(var i=0; i<colorPosData.length; i++){
     userOprHistory.push(new makeUserOprHistory(colorPosData[selectedIndex].id, colorPosData[selectedIndex].x, colorPosData[selectedIndex].y, colorPosData[selectedIndex].g, colorPosData[selectedIndex].b));
-	//}
-    // 所属クラスタが変わった場合のみ
-    /*if(oldCL !== changeCL){
-      // クラスタラベルが変わったデータ点の旧所属クラスタと新所属クラスタの中心点を再計算&履歴を保存
-      // クラスタ中心の変更履歴を保存
-      userCalcClusterCenter(changeCL);
-      userHistory.push(new makeUserHistory(changeCL, Math.round(userClusterCenter[changeCL].g*255), Math.round(userClusterCenter[changeCL].b*255)));
-      userCalcClusterCenter(oldCL);
-      userHistory.push(new makeUserHistory(oldCL, Math.round(userClusterCenter[oldCL].g*255), Math.round(userClusterCenter[oldCL].b*255)));
-      console.log("old:" + oldCL + ", new:" + changeCL);
-      console.log(oldCL+",old:"+userClusterCenter[oldCL].g, userClusterCenter[oldCL].b);
-      console.log(changeCL+",new:"+userClusterCenter[changeCL].g, userClusterCenter[changeCL].b);
-      // ユーザオブジェクトの履歴保存
-      var changeDataId = colorPosData[colorPosData.length-1].id;
-      userOprHistory.push(new makeUserOprHistory(changeDataId, colorPosData[changeDataId].x, colorPosData[changeDataId].y, colorPosData[changeDataId].g, colorPosData[changeDataId].b));
-    }*/
   }
   console.log("履歴の数"+userOprHistory.length);
 }
