@@ -174,7 +174,41 @@ alert("playanima");
     rContext.stroke();
   }
 
-  setTrajectory();
+  // アニメーション描画のために呼ばれ続ける
+  function render() {
+    // Canvas全体をクリア
+    rContext.clearRect(0, 0, rContext.width, rContext.height);
+
+    // 要素を描画する
+
+
+    // 左画面描画 ユーザオブジェクトのx,y,g,b
+
+	// 右画面データ点描画
+	plotDataPoint(t);
+	// 右画面クラスタ中心描画
+	plotClusterCenter(t);
+
+	// 右画面ユーザ操作によるクラスタ中心
+
+    // データ点は位置固定、
+	count++;
+	if(count % 3 == 0){
+		t++;
+		console.log("t:"+t);
+	}
+
+    // このrender関数を繰り返す
+    // 下記どちらかを使った場合は、外側でrender()を実行する※1（もしくは即時実行）
+    // setTimeout(render, 100);
+    // requestAnimationFrame(render);
+    }
+    /* ※1 */
+    // render();
+
+    /* render()関数を繰り返す */
+    /* setTimeout、requestAnimationFrameではなく、setIntervalを使う場合 */
+    //setInterval(render, 500);
 	var loopNum = userHistory.length / 4;
 	if(loopNum < resMap["iters"]){
 	  loopNum = resMap["iters"];
@@ -214,7 +248,6 @@ function loopContent(i){
 	plotClusterCenter(t);
 
     plotClusterCenterHistory(userHistory, i, 0); //userのクラスタ中心の履歴の描画
-    drawTrajectory(i);
 	// クラスタリング結果のクラスタ中心描画
 	// クラスタリング対象のデータを描画
 	t++;
