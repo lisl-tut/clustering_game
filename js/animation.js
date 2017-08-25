@@ -190,7 +190,7 @@ loop(0, hoge); //ループ処理(0から開始してhogeまで)
 function loopContent(i){
     //clear();
     drawAxis(); //軸を表示
-    plotClusterCenterHistory(userHistory, i, 0); //userのクラスタ中心の履歴の描画
+    plotUserClusterCenter(i, 0); //userのクラスタ中心の履歴の描画
 
 
 }
