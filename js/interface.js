@@ -32,7 +32,7 @@ function makeUserOprHistory(id, x, y, g, b){
 function init() {
   //leftFlag = true;
   // ユーザー用オブジェクト生成
-  
+
   // JSONデータを配列へ
   //var testJson = '[{"cluster":0,"point":[0.30293765954862756,0.3849310722222656]},{"cluster":1,"point":[0.08036268578171582,0.20346417834021638]}]';
   //var testJson = '[{"cluster":0,"point":[0.30293765954862756,0.3849310722222656]},{"cluster":1,"point":[0.5,0.9]}]';
@@ -42,7 +42,7 @@ function init() {
  // var gbArray = JSON.parse(testJson);
 //  console.log("jsonTest:"+gbArray[1]["cluster"]);
   var gbArray = JSON.parse(data_json_str);
-  
+
   // 決定ボタンを二回目以降押したときのために配列をそれぞれリセット
   if(colorPosData.length > 0){colorPosData = [];}
   if(userClusterCenter.length > 0){userClusterCenter = [];}
@@ -57,7 +57,7 @@ function init() {
     var yMin = radius;
     var initX = Math.floor( Math.random() * (xMax + 1 - xMin) ) + xMin ;
     var initY = Math.floor( Math.random() * (yMax + 1 - yMin) ) + xMin ;
-    
+
     //var initG = Math.random();
     //var initB = Math.random();
     colorPosData.push(new makeColorPosData(initX, initY, fixedR, gbArray[i]["point"][0], gbArray[i]["point"][1], i));
@@ -89,7 +89,7 @@ function onDown(e) {
   var selectedIndex;
   for(var i=0; i<colorPosData.length; i++){
     // 長方形の判定
-    /*if (colorPosData[i].x < x && (colorPosData[i].x + objWidth) > x 
+    /*if (colorPosData[i].x < x && (colorPosData[i].x + objWidth) > x
       && colorPosData[i].y < y && (colorPosData[i].y + objHeight) > y) {*/
     // 円の判定
     if(Math.sqrt(Math.pow(colorPosData[i].x-x,2)+Math.pow(colorPosData[i].y-y,2)) < radius){
@@ -206,7 +206,7 @@ function drawLine(){
   context.moveTo(0, canvas.height/2);
   context.lineTo(canvas.width, canvas.height/2);
   context.stroke();
-  
+
   // 縦線
   context.beginPath();
   context.moveTo(canvas.width/2, 0);
@@ -219,14 +219,14 @@ function drawCircle(i, plotObj){
   context.beginPath();
   context.arc(plotObj[i].x, plotObj[i].y, radius, 0, Math.PI*2, false);
   context.fill();
-    
+
   // 円の縁取り
   context.strokeStyle = 'rgba(0, 0, 0,1)';
   context.beginPath();
   context.arc(colorPosData[i].x, colorPosData[i].y, radius, 0, Math.PI*2, false);
   context.stroke();
 }
-  
+
 function repaint(){
   context.clearRect(0, 0, canvas.width, canvas.height);
   drawLine();
