@@ -1,3 +1,5 @@
+  var rCanvas = document.getElementById("tutorial2");
+  var rContext = rCanvas.getContext('2d');
 function playAnime(){
   console.log("playAnimation");
   // 左画面にオブジェクトが表示されているかチェック
@@ -13,8 +15,6 @@ alert("playanima");
 // 答え合わせを押したときに呼ばれる
 // 左画面が表示されているかのチェック
 // = データ点の変数がある
-  var rCanvas = document.getElementById("tutorial2");
-  var rContext = rCanvas.getContext('2d');
   var resMap = JSON.parse(learn_json_str);
   console.log(learn_json_str);
   if(resMap["success"] !== true){console.log("受信失敗");return;}
@@ -35,8 +35,17 @@ alert("playanima");
   }
   // データ点をすべてRGBから画面上の位置へ変換
   function convRgbToPos(obj, colorG, colorB){
-    obj.x = Math.round(colorG * (rCanvas.width - 2*radius)) + radius;
-    obj.y = rCanvas.height - (Math.round(colorB*(rCanvas.height-2*radius))+radius);
+    //obj.x = Math.round(colorG * (rCanvas.width - 2*radius)) + radius;
+    //obj.y = rCanvas.height - (Math.round(colorB*(rCanvas.height-2*radius))+radius);
+
+	obj.x = colorG * 255;
+    obj.y = colorB * 255;
+
+
+	obj.x = obj.x*((rCanvas.width*0.8)/255) + (rCanvas.width*0.1);
+    obj.y = obj.y*((rCanvas.height*0.8)/255) + (rCanvas.height*0.1);
+    obj.y = rCanvas.height - obj.y; //上下反転変換
+
 	console.log(colorG + ", " + colorB);
 	console.log(obj.x + ", " + obj.y);
     //obj.x = Math.round(resMap["result"][i]["centroid"][j]["x"] * (wih - 2*rightRadius)) + rightRadius;
@@ -51,36 +60,68 @@ alert("playanima");
  // var r = 10;
   // データポイントのプロット関数
   function plotDataPoint(t){
-    var resultIndex = t;
+    var resultIndex = t-1;
 	if(resultIndex >= resMap["iters"]){resultIndex = resMap["iters"]-1;}
 
-    for(var i=0; i<dataPoint.length; i++){
-	  var clusterLabel = resMap["result"][resultIndex]["allocation"][dataPoint[i].id];
-	//alert("i:"+i+","+dataPoint[i].id);// + ","+clusterLabel);
-	//alert("cL"+clusterLabel + ", K:" + resMap["result"][resultIndex]["clusterNum"]);
-	  var g = resMap["result"][resultIndex]["centroid"][clusterLabel]["x"] * 255;
-	  var b = resMap["result"][resultIndex]["centroid"][clusterLabel]["y"] * 255;
-//	  drawRightPCircle(dataPoint[i].x, dataPoint[i].y, dataPoint[i].g, dataPoint[i].b);
-	  drawRightPCircle(dataPoint[i].x, dataPoint[i].y, g, b);
-	  console.log(dataPoint[i].x);//+"," +dataPoint[i].y+","+ i)+
-	  // 描画関数
-	  // plot(dataPoint.x, dataPoint.y, cluster[dataPoint.id].g, cluster[dataPoint.id].b)
+	//var labelList = Array(resMap["result"][resultIndex][labels].length);
+    function returnClusterLabel(label){
+	  var no;
+	  var index;
+	  for(var i=0; i<resMap["result"][resultIndex]["labels"].length; i++){
+	    no = resMap["result"][resultIndex]["labels"][i];
+		if(no === label){
+		  index = i;
+		  break;
+		}
+	  }
+	  return index;
+	}
+	if(resultIndex === -1){
+		for(var i=0; i<dataPoint.length; i++){
+			//var clusterLabel = returnClusterLabel(resMap["result"][resultIndex]["allocation"][dataPoint[i].id]);
+			//alert("i:"+i+","+dataPoint[i].id);// + ","+clusterLabel);
+			//alert("cL"+clusterLabel + ", K:" + resMap["result"][resultIndex]["clusterNum"]);
+			//alert("cL"+clusterLabel);
+			var g = Math.round(dataPoint[i].g);
+			var b = Math.round(dataPoint[i].b);
+			//	  drawRightPCircle(dataPoint[i].x, dataPoint[i].y, dataPoint[i].g, dataPoint[i].b);
+			drawRightPCircle(dataPoint[i].x, dataPoint[i].y, g, b);
+			console.log(dataPoint[i].x);//+"," +dataPoint[i].y+","+ i)+
+			// 描画関数
+			// plot(dataPoint.x, dataPoint.y, cluster[dataPoint.id].g, cluster[dataPoint.id].b)
+		}
+	}
+	else{
+		for(var i=0; i<dataPoint.length; i++){
+			var clusterLabel = returnClusterLabel(resMap["result"][resultIndex]["allocation"][dataPoint[i].id]);
+			//alert("i:"+i+","+dataPoint[i].id);// + ","+clusterLabel);
+			//alert("cL"+clusterLabel + ", K:" + resMap["result"][resultIndex]["clusterNum"]);
+			//alert("cL"+clusterLabel);
+			var g = Math.round(resMap["result"][resultIndex]["centroid"][clusterLabel]["x"] * 255);
+			var b = Math.round(resMap["result"][resultIndex]["centroid"][clusterLabel]["y"] * 255);
+		//	  drawRightPCircle(dataPoint[i].x, dataPoint[i].y, dataPoint[i].g, dataPoint[i].b);
+			drawRightPCircle(dataPoint[i].x, dataPoint[i].y, g, b);
+			console.log(dataPoint[i].x);//+"," +dataPoint[i].y+","+ i)+
+			// 描画関数
+			// plot(dataPoint.x, dataPoint.y, cluster[dataPoint.id].g, cluster[dataPoint.id].b)
+		}
 	}
   }
   function plotClusterCenter(t){
   	if(t == 0){return;}
-
+//alert("ttt");
     var resultIndex = t - 1;
 	if(resultIndex+1 >= resMap["iters"]){resultIndex = resMap["iters"]-2;}
 
-	var clusterNum = resMap["result"][resultIndex]["clusterNum"];
-	var x = new Array(clusterNum);
-	var y = new Array(clusterNum);
+	var clusterNum = resMap["result"][resultIndex]["centroid"].length;
+	//var x = new Array(clusterNum);
+	//var y = new Array(clusterNum);
 	//var g = resMap["result"][t]["centroid"];
 	//var b = new Array(clusterNum);
 	//alert(resMap["result"][0]["clusterNum"]+"aaaaaaaaaa"+clusterNum);
 	//alert(resMap["iters"]);
 	var centroid = [];
+	//alert(centroid.length);
 	for(var i=0; i<clusterNum; i++){
 	  var g = resMap["result"][resultIndex]["centroid"][i]["x"];
 	  var b = resMap["result"][resultIndex]["centroid"][i]["y"];
@@ -89,9 +130,10 @@ alert("playanima");
 	  convRgbToPos(centroid[i], g, b);
 	  //alert(g + ", " + b);
 	  //alert(centroid[i].g + ", " + centroid[i].b);
+	 // alert(centroid[i].x + ", " + centroid[i].y + ", " + centroid[i].g + ", " + centroid[i].b);
   	  drawRightCCircle(centroid[i].x, centroid[i].y, centroid[i].g, centroid[i].b);
 	}
-	//alert(centroid.length);
+
   }
   // データアイコン
   function drawRightPCircle(x, y, colorG, colorB, roundColorG, roundColorB){
@@ -103,6 +145,7 @@ alert("playanima");
 
     // 円の縁取り
 	//alert(rContext.lineWidth);
+	rContext.lineWidth = 1;
     rContext.strokeStyle = 'rgba(128,'+ roundColorG +','+ roundColorB+',1)';
     rContext.beginPath();
     rContext.arc(x, y, rightRadius, 0, Math.PI*2, false);
@@ -165,8 +208,13 @@ alert("playanima");
 
     /* render()関数を繰り返す */
     /* setTimeout、requestAnimationFrameではなく、setIntervalを使う場合 */
-    setInterval(render, 500);
-  }
+    //setInterval(render, 500);
+	var loopNum = userHistory.length / 4;
+	if(loopNum < resMap["iters"]){
+	  loopNum = resMap["iters"];
+	}
+	loop(0, loopNum);
+//  }
 
 
 
@@ -183,15 +231,29 @@ alert("playanima");
 
 
 /* ======== ここからmain ======== */
-loop(0, hoge); //ループ処理(0から開始してhogeまで)
+//loop(0, hoge); //ループ処理(0から開始してhogeまで)
 
 
 /* ここにloop関数でループさせる内容を書いてください． */
 function loopContent(i){
     //clear();
+    rContext.clearRect(0, 0, rContext.width, rContext.height);
+	//alert(userHistory.length+","+userHistory[0].g);
+	//	alert(userHistory[0].id+",g"+userHistory[0].g+","+userHistory[0].b);
     drawAxis(); //軸を表示
-    plotUserClusterCenter(i, 0); //userのクラスタ中心の履歴の描画
 
+	// 右画面データ点描画
+	plotDataPoint(t);
+	// 右画面クラスタ中心描画
+	plotClusterCenter(t);
+
+    plotClusterCenterHistory(userHistory, i, 0); //userのクラスタ中心の履歴の描画
+	// クラスタリング結果のクラスタ中心描画
+	// クラスタリング対象のデータを描画
+	t++;
+	i=t;
+
+	// 左画面描画
 
 }
 
@@ -286,7 +348,7 @@ function drawAxis(){
     rContext.moveTo(rCanvas.width*0.1, rCanvas.height*0.9);
     rContext.lineTo(rCanvas.width*0.9, rCanvas.height*0.9);
     rContext.stroke();
-
+	rContext.fillStyle = 'rgb(0, 0, 0)';
     rContext.fillText('0', rCanvas.width*0.1-10, rCanvas.height*0.9);
     rContext.fillText('255', rCanvas.width*0.1-20, rCanvas.height*0.11);
     rContext.fillText('0', rCanvas.width*0.1, rCanvas.height*0.9+10);
@@ -303,17 +365,14 @@ numに2を指定したときは0回目と1回目と2回目のクラスタ中心�
 numに3を指定したときは0回目と1回目と2回目と3回目のクラスタ中心をプロットします．
     ... 以下同様
 */
-function plotUserClusterCenter(num, marker){
-    var j;
-
-    //表示回数がデータの表示できる回数分より大きかった場合は一番最後を表示する
-    if(num > (userHistory.length - 4)/4) num = (userHistory.length - 4)/4;
+function plotClusterCenterHistory(dotHistory, num, marker){
+    var i, n;
+    if(num > (dotHistory.length - 4)/4) num = (dotHistory.length - 4)/4; //表示回数がデータの表示できる回数分より大きかった場合はそこで打ち切る
 
     /*データの表示*/
     for(j = num*4; j < num*4 + 4; j++){
         plotDot(userHistory[j]['g'], userHistory[j]['b'], marker, userHistory[j]['id']);
     }
-
 }
 
 
@@ -334,4 +393,4 @@ function loop(i, endCount){
         loopContent(i);
         setTimeout(function(){loop(++i, endCount)}, 1000);
     }
-}
+}}
