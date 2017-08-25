@@ -311,7 +311,7 @@ function plotUserClusterCenter(num, marker){
 
     /*データの表示*/
     for(j = num*4; j < num*4 + 4; j++){
-        plotDot(userHistory[j]['x'], userHistory[j]['y'], marker, userHistory[j]['id']);
+        plotDot(userHistory[j]['g'], userHistory[j]['b'], marker, userHistory[j]['id']);
     }
 
 }
