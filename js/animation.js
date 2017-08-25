@@ -303,25 +303,25 @@ numに2を指定したときは0回目と1回目と2回目のクラスタ中心�
 numに3を指定したときは0回目と1回目と2回目と3回目のクラスタ中心をプロットします．
     ... 以下同様
 */
-function plotClusterCenterHistory(dotHistory, num, marker){
+function plotUserClusterCenter(num, marker){
     var i, n;
 
     //表示回数がデータの表示できる回数分より大きかった場合は一番最後を表示する
-    if(num > (dotHistory.length - 4)/2) num = (dotHistory.length - 4)/2;
+    if(num > (userHistory.length - 4)/2) num = (userHistory.length - 4)/2;
 
     /*データの表示*/
     //初めの4つ
     if(num == 0){
-        plotDot(dotHistory[0]['x'], dotHistory[0]['y'], marker, dotHistory[0]['id']);
-        plotDot(dotHistory[1]['x'], dotHistory[1]['y'], marker, dotHistory[1]['id']);
-        plotDot(dotHistory[2]['x'], dotHistory[2]['y'], marker, dotHistory[2]['id']);
-        plotDot(dotHistory[3]['x'], dotHistory[3]['y'], marker, dotHistory[3]['id']);
+        plotDot(userHistory[0]['x'], userHistory[0]['y'], marker, userHistory[0]['id']);
+        plotDot(userHistory[1]['x'], userHistory[1]['y'], marker, userHistory[1]['id']);
+        plotDot(userHistory[2]['x'], userHistory[2]['y'], marker, userHistory[2]['id']);
+        plotDot(userHistory[3]['x'], userHistory[3]['y'], marker, userHistory[3]['id']);
     }
     //更新データ
     else{
         i = 2 + num*2;
-        plotDot(dotHistory[i]['x'], dotHistory[i]['y'], marker, dotHistory[i]['id']);
-        plotDot(dotHistory[i+1]['x'], dotHistory[i+1]['y'], marker, dotHistory[i+1]['id']);
+        plotDot(userHistory[i]['x'], userHistory[i]['y'], marker, userHistory[i]['id']);
+        plotDot(userHistory[i+1]['x'], userHistory[i+1]['y'], marker, userHistory[i+1]['id']);
     }
 }
 
