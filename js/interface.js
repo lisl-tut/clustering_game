@@ -65,7 +65,8 @@ function init() {
     colorPosData[index].clusterLabel = dataRecognize(index);
     //colorPosData.push(new makeColorPosData(canvas.width / 2 - objWidth / 2, canvas.height / 2 - objHeight / 2, fixedR, 180, 90));
     // ユーザ操作履歴初期化
-    userOprHistory.push(new makeUserOprHistory(i, initX, initY, colorPosData[index].g, colorPosData[index].b));
+    initColorPosData.push(new makeUserOprHistory(i, initX, initY, colorPosData[index].g, colorPosData[index].b));
+	//alert("cccc"+colorPosData[index].g);
   }
   //console.log(userOprHistory.length);
   // ユーザ操作によるクラスタ中心を生成
@@ -120,6 +121,8 @@ function onMove(e){
 }
 function onUp(e){
   if(dragging){
+    var selectedIndex = colorPosData.length - 1;
+	
     var oldCL = colorPosData[colorPosData.length-1].clusterLabel;
     dragging = false;
     // クラスタ所属判定
@@ -134,7 +137,9 @@ function onUp(e){
 	for(var i=0; i<4-userClusterCenter.length; i++){
 	  userHistory.push(new makeUserHistory(null, null, null));
 	}
-	
+	//for(var i=0; i<colorPosData.length; i++){
+    userOprHistory.push(new makeUserOprHistory(colorPosData[selectedIndex].id, colorPosData[selectedIndex].x, colorPosData[selectedIndex].y, colorPosData[selectedIndex].g, colorPosData[selectedIndex].b));
+	//}
     // 所属クラスタが変わった場合のみ
     /*if(oldCL !== changeCL){
       // クラスタラベルが変わったデータ点の旧所属クラスタと新所属クラスタの中心点を再計算&履歴を保存
@@ -235,7 +240,7 @@ function drawCircle(i, plotObj){
   // 円の縁取り
   context.strokeStyle = 'rgba(0, 0, 0,1)';
   context.beginPath();
-  context.arc(colorPosData[i].x, colorPosData[i].y, radius, 0, Math.PI*2, false);
+  context.arc(plotObj[i].x, plotObj[i].y, radius, 0, Math.PI*2, false);
   context.stroke();
 }
   
@@ -249,6 +254,7 @@ function repaint(){
 
 
 // スクリプト読み込み時に実行される
+var initColorPosData = [];
 var colorPosData = [];  // データ点オブジェクトを格納
 var clusterNum = 4; // 左画面における識別のためのクラスタ数
 var userClusterCenter = []; // ユーザ操作により計算されるクラスタ中心
