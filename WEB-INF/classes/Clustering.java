@@ -55,7 +55,7 @@ public class Clustering {
 
         DataGenerator dg = new DataGenerator(3);
         
-        Clustering kmeans = new Clustering(dg.generate(), 0.0, 1.0, "DP", 0.2);
+        Clustering kmeans = new Clustering(dg.generate(), 0.0, 1.0, "K", 3);
         //KMeans kmeans = new KMeans();
         kmeans.init();
         kmeans.fit();
@@ -76,17 +76,17 @@ public class Clustering {
         }
 
         //Create Clusters + Set Random Centroids
-        for (int i = 0; i < k; i++) {
+        for (int i = 0; i < k; i++){
             Cluster cluster = new Cluster(i);
-            Point centroid;
-            if(generatedData == null){
-                centroid = Point.createRandomPoint(0.0, 1.0);
-            }else{
-                centroid = Point.createRandomPoint(this.minCoordinate, this.maxCordinate);
-            }
-            cluster.setCentroid(centroid);
+            cluster.setCentroid(new Point(-1, -1));
             clusters.add(cluster);
         }
+        
+        for (Point point : points){
+            clusters.get((int)(Math.random()*clusters.size())).addPoint(point);
+        }
+        
+        calculateCentroids();
     }
 
     //The process to calculate the K Means, with iterating method.
@@ -103,8 +103,9 @@ public class Clustering {
 
         while(e != 0) {
             clearClusters();
+            
             lastCentroids = getCentroids();
-
+            
             assignCluster(iteration);
             calculateCentroids();
 
@@ -131,24 +132,6 @@ public class Clustering {
         this.json = mapper.writeValueAsString(out);
 
         System.out.println(json);
-    }
-
-    private ArrayList<Point> getCentroids() {
-        ArrayList<Point> centroids = new ArrayList<Point>(k);
-        for(Cluster cluster : clusters) {
-            Point aux = cluster.getCentroid();
-            Point point = new Point(aux.getX(),aux.getY());
-            centroids.add(point);
-        }
-        return centroids;
-    }
-    
-    private ArrayList<Integer> getLabels(){
-        ArrayList<Integer> labels = new ArrayList<Integer>();
-        for(Cluster cluster : clusters){
-            labels.add(cluster.getId());
-        }
-        return labels;
     }
 
     private void assignCluster(int iter) {       
@@ -208,6 +191,24 @@ public class Clustering {
             Point centroid = cluster.getCentroid();
             if(pointNum > 0) centroid.set(newX, newY);
         }
+    }
+    
+        private ArrayList<Point> getCentroids() {
+        ArrayList<Point> centroids = new ArrayList<Point>(k);
+        for(Cluster cluster : clusters) {
+            Point aux = cluster.getCentroid();
+            Point point = new Point(aux.getX(),aux.getY());
+            centroids.add(point);
+        }
+        return centroids;
+    }
+    
+    private ArrayList<Integer> getLabels(){
+        ArrayList<Integer> labels = new ArrayList<Integer>();
+        for(Cluster cluster : clusters){
+            labels.add(cluster.getId());
+        }
+        return labels;
     }
     
     private void plotClusters() {
