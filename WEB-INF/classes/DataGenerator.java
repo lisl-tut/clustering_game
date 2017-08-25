@@ -43,6 +43,8 @@ public class DataGenerator {
             for(Sample s : clusterCenters){
                 var += Math.pow(s.getX() - meanX, 2) + Math.pow(s.getY() - meanY, 2);
             }
+            var /= clusterNum;
+            
             if(this.tuning == 2){
                 break;
             }else if(this.tuning == 0){
