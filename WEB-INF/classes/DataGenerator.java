@@ -48,9 +48,9 @@ public class DataGenerator {
             if(this.tuning == 2){
                 break;
             }else if(this.tuning == 0){
-                if(var > 5.0/16.0 ) break;
+                if(var > 1.0/8.0 ) break;
             }else{
-                if(var < 1.0/16.0 ) break;
+                if(var < 1.0/8.0 ) break;
             }
         }while(true);
         
