@@ -9,7 +9,7 @@ function playAnime(){
   }
  // alert("アニメーション再生");
 alert("playanima");
-
+alert(userHistory.length);
   // 右画面におけるユーザ操作のクラスタ中心とクラスタリング結果のデータ点、クラスタ中心の位置変換
 
 // 答え合わせを押したときに呼ばれる
@@ -30,7 +30,8 @@ alert("playanima");
   }
   // 右画面におけるデータの位置座標とクラスタへの参照ラベルを取得
   for(var i=0; i<colorPosData.length; i++){
-    dataPoint.push(new makeDataPos(userOprHistory[i].g/255, userOprHistory[i].b/255, userOprHistory[i].g, userOprHistory[i].b, userOprHistory[i].id));
+    //dataPoint.push(new makeDataPos(userOprHistory[i].g/255, userOprHistory[i].b/255, userOprHistory[i].g, userOprHistory[i].b, userOprHistory[i].id));
+    dataPoint.push(new makeDataPos(initColorPosData[i].g/255, initColorPosData[i].b/255, initColorPosData[i].g, initColorPosData[i].b, initColorPosData[i].id));
 	convRgbToPos(dataPoint[i], dataPoint[i].x, dataPoint[i].y);
   }
   // データ点をすべてRGBから画面上の位置へ変換
@@ -209,6 +210,7 @@ alert("playanima");
     /* render()関数を繰り返す */
     /* setTimeout、requestAnimationFrameではなく、setIntervalを使う場合 */
     //setInterval(render, 500);
+	setTrajectory();
 	var loopNum = userHistory.length / 4;
 	if(loopNum < resMap["iters"]){
 	  loopNum = resMap["iters"];
@@ -237,6 +239,7 @@ alert("playanima");
 /* ここにloop関数でループさせる内容を書いてください． */
 function loopContent(i){
     //clear();
+    context.clearRect(0, 0, canvas.width, canvas.height);
     rContext.clearRect(0, 0, rContext.width, rContext.height);
 	//alert(userHistory.length+","+userHistory[0].g);
 	//	alert(userHistory[0].id+",g"+userHistory[0].g+","+userHistory[0].b);
@@ -248,6 +251,9 @@ function loopContent(i){
 	plotClusterCenter(t);
 
     plotClusterCenterHistory(userHistory, i, 0); //userのクラスタ中心の履歴の描画
+	
+	drawLine();
+	drawTrajectory(t);
 	// クラスタリング結果のクラスタ中心描画
 	// クラスタリング対象のデータを描画
 	t++;
@@ -368,11 +374,12 @@ numに3を指定したときは0回目と1回目と2回目と3回目のクラス
 function plotClusterCenterHistory(dotHistory, num, marker){
     var i, n;
     if(num > (dotHistory.length - 4)/4) num = (dotHistory.length - 4)/4; //表示回数がデータの表示できる回数分より大きかった場合はそこで打ち切る
-
+//var c = 0;
     /*データの表示*/
     for(j = num*4; j < num*4 + 4; j++){
         plotDot(userHistory[j]['g'], userHistory[j]['b'], marker, userHistory[j]['id']);
-    }
+	//	c++;
+    }//alert("c"+c);
 }
 
 
@@ -391,6 +398,6 @@ function loop(i, endCount){
     if(i <= endCount){
         //console.log('counter:' + i)
         loopContent(i);
-        setTimeout(function(){loop(++i, endCount)}, 1000);
+        setTimeout(function(){loop(++i, endCount)}, 100);
     }
 }}
