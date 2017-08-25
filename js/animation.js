@@ -304,25 +304,16 @@ numに3を指定したときは0回目と1回目と2回目と3回目のクラス
     ... 以下同様
 */
 function plotUserClusterCenter(num, marker){
-    var i, n;
+    var j;
 
     //表示回数がデータの表示できる回数分より大きかった場合は一番最後を表示する
-    if(num > (userHistory.length - 4)/2) num = (userHistory.length - 4)/2;
+    if(num > (userHistory.length - 4)/4) num = (userHistory.length - 4)/4;
 
     /*データの表示*/
-    //初めの4つ
-    if(num == 0){
-        plotDot(userHistory[0]['x'], userHistory[0]['y'], marker, userHistory[0]['id']);
-        plotDot(userHistory[1]['x'], userHistory[1]['y'], marker, userHistory[1]['id']);
-        plotDot(userHistory[2]['x'], userHistory[2]['y'], marker, userHistory[2]['id']);
-        plotDot(userHistory[3]['x'], userHistory[3]['y'], marker, userHistory[3]['id']);
+    for(j = num*4; j < num*4 + 4; j++){
+        plotDot(userHistory[j]['x'], userHistory[j]['y'], marker, userHistory[j]['id']);
     }
-    //更新データ
-    else{
-        i = 2 + num*2;
-        plotDot(userHistory[i]['x'], userHistory[i]['y'], marker, userHistory[i]['id']);
-        plotDot(userHistory[i+1]['x'], userHistory[i+1]['y'], marker, userHistory[i+1]['id']);
-    }
+
 }
 
 
