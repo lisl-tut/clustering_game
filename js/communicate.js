@@ -47,6 +47,7 @@ function getData(){
     data_json_str = request.responseText;
     document.getElementById("test").textContent = data_json_str;
     init();
+    leftFlag = true;
 }
 
 function getLearn(){
