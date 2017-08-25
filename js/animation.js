@@ -331,7 +331,6 @@ function plotUserClusterCenter(num, marker){
 ループ関数, 1000ms毎にloopContentの処理を行う．
 iは繰り返しのカウンターの初期値
 endCountはカウンターの最後の値
-
 =====以下のコードと同様の動きをします=====
     for(n=i, n <= endCount; n++){
         loopContent();   //上にあるこの関数内にループさせたい処理を書いてください．

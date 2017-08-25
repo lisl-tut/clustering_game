@@ -30,14 +30,16 @@ function makeUserOprHistory(id, x, y, g, b){
 }
 
 function init() {
+  //leftFlag = true;
   // ユーザー用オブジェクト生成
   
   // JSONデータを配列へ
-  var testJson = '[{"cluster":0,"point":[0.30293765954862756,0.3849310722222656]},{"cluster":1,"point":[0.08036268578171582,0.20346417834021638]}]';
+  //var testJson = '[{"cluster":0,"point":[0.30293765954862756,0.3849310722222656]},{"cluster":1,"point":[0.08036268578171582,0.20346417834021638]}]';
+  //var testJson = '[{"cluster":0,"point":[0.30293765954862756,0.3849310722222656]},{"cluster":1,"point":[0.5,0.9]}]';
   // JSONデータがないときは線を引くだけ
-  //if(typeof testJson === "undefined" || testJson == ""){repaint();return;}
+ // if(typeof testJson === "undefined" || testJson == ""){repaint();return;}
   if(typeof data_json_str === "undefined" || data_json_str == ""){repaint();return;}
-  //var gbArray = JSON.parse(testJson);
+ // var gbArray = JSON.parse(testJson);
 //  console.log("jsonTest:"+gbArray[1]["cluster"]);
   var gbArray = JSON.parse(data_json_str);
   
@@ -48,6 +50,7 @@ function init() {
   if(userOprHistory.length > 0){userOprHistory = [];}
   // データ点の配列を生成
   for(var i=0; i<gbArray.length; i++){
+  //for(var i=0; i<2; i++){
     var xMax = canvas.width - radius;
     var xMin = radius;
     var yMax = canvas.height - radius;
@@ -212,7 +215,7 @@ function drawLine(){
 }
 function drawCircle(i, plotObj){
   // 円を塗りつぶす
-  context.fillStyle = 'rgba('+plotObj[i].r+','+plotObj[i].g+','+plotObj[i].b+',1)';
+  context.fillStyle = 'rgba('+fixedR+','+plotObj[i].g+','+plotObj[i].b+',1)';
   context.beginPath();
   context.arc(plotObj[i].x, plotObj[i].y, radius, 0, Math.PI*2, false);
   context.fill();
@@ -220,7 +223,7 @@ function drawCircle(i, plotObj){
   // 円の縁取り
   context.strokeStyle = 'rgba(0, 0, 0,1)';
   context.beginPath();
-  context.arc(plotObj[i].x, plotObj[i].y, radius, 0, Math.PI*2, false);
+  context.arc(colorPosData[i].x, colorPosData[i].y, radius, 0, Math.PI*2, false);
   context.stroke();
 }
   
@@ -245,6 +248,7 @@ var relX, relY;
 var radius = 30;
 var dragging = false;
 var fixedR = 66;
+var leftFlag;
 
 canvas.addEventListener('mousedown', onDown, false);
 canvas.addEventListener('mousemove', onMove, false);

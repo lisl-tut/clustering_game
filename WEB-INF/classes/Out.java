@@ -8,17 +8,17 @@ public class Out {
     public boolean success;
     public ArrayList<Iter> result = new ArrayList<>();
         
-    public void setToIter(int clusterNum, ArrayList<Point> centroid,ArrayList<Integer> allocation){
+    public void setToIter(ArrayList<Integer> labels, ArrayList<Point> centroid,ArrayList<Integer> allocation){
         Iter iter = new Iter();
         iter.centroid = centroid;
         iter.allocation = allocation;
-        iter.clusterNum = clusterNum;
+        iter.labels = labels;
         result.add(iter);
     }
 }
 
 class Iter{
-    public int clusterNum;
+    public ArrayList<Integer> labels;
     public ArrayList<Point> centroid = new ArrayList<>();
     public ArrayList<Integer> allocation = new ArrayList<>();
 }
