@@ -2,7 +2,19 @@
   <head>
     <meta charset="UTF-8">
     <title>Canvas tutorial</title>
-    <link rel="stylesheet" href="./css/style3.css" type="text/css" />
+
+    		<!-- Import prettify files -->
+        <link href="src/google-code-prettify/prettify.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="src/google-code-prettify/prettify.js"></script>
+
+    <!--Import materialize.css-->
+    <link type="text/css" rel="stylesheet" href="src/materialize/css/materialize.min.css"  media="screen,projection"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link rel="stylesheet" href="./css/style3.css" type="text/css" /
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
     <script type="text/javascript" src="./js/communicate.js" charset="utf-8"></script>
     <script type="text/javascript">
       function draw(){
@@ -18,16 +30,19 @@
   </head>
   <body onload="draw();">
 
-<div id="div1">
 
-    <canvas id="tutorial" width="400" height="300"></canvas>
-    <canvas id="tutorial2" width="400" height="300"></canvas>
-</div>
-<div id="div2">
-<ul>
+
+<div  id="div2" class="navbar-fixed">
+  <nav>
+          <div class="nav-wrapper  blue accent-1">
+            <a href="#" class="brand-logo right">Clustering_game</a>
+            <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+
+            <ul id="nav-mobile" class="left hide-on-med-and-down">
+
     <form name="settei" method="get">
-<li>
-      アルゴリズムの種類
+      <li>
+    アルゴリズムの種類
       <select name="algorithm" id="algorithm" size="1" onChange="algorithmSelected(value)">
         <option value="0" id="kmeans">K-means</option>
         <option value="1" id="dpmeans">DP-means</option>
@@ -66,10 +81,23 @@
         <option value="2">random</option>
       </select>
     </li>
-      <button type="button" name="action" value="send" onclick="getData()">決定</button>
-      <button type="button" name="kotaeawase" value="send" onclick="getLearn()">答え合わせ</button>
+    <a class="waves-effect blue accent-2 btn" name="action" value="send" onclick="getData()">決定</a>
+    <a class="waves-effect blue accent-2 btn" name="kotaeawase" value="send" onclick="getLearn()">答え合わせ</a>
+    <a class="waves-effect blue accent-2 btn" name="reloadbutton" value="send" onclick="location.reload()">リロード</a>
+
+      <!--<button type="button" name="action" value="send" onclick="getData()">決定</button>-->
+      <!--<button type="button" name="kotaeawase" value="send" onclick="getLearn()">答え合わせ</button>-->
     </form>
     </ul>
+    </div>
+
+    <div id="div1">
+        <canvas id="tutorial" width="400" height="300"></canvas>
+        <canvas id="tutorial2" width="400" height="300"></canvas>
+    </div>
+
+    <div id="request">request</div>
+    <div id="test">test area</div>
 
     <script>
     function algorithmSelected(value){
@@ -88,9 +116,15 @@
     </script>
     <script type="text/javascript" src="./js/interface.js" charset="utf-8"></script>
     <script type="text/javascript" src="./js/animation.js" charset="utf-8"></script>
-    </div>
-    <div id="request">request</div>
-    <div id="test">test area</div>
+
     <a href="test.html">test page</a>
+
+    <!--Import jQuery before materialize.js-->
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+        <script type="text/javascript" src="src/materialize/js/materialize.min.js"></script>
+
+        <!-- Import my script -->
+    <script type="text/javascript" src="src/myScript.js"></script>
+
   </body>
 </html>
