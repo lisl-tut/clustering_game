@@ -1,0 +1,50 @@
+* {
+	margin:0; padding:0; 	/*全要素のマージン・パディングをリセット*/
+	line-height:1.5;	/*全要素の行の高さを1.5倍にする*/
+	color:#333333;		/*文字色*/
+
+}
+
+body {
+
+	background-color:#999999;	/*ページ全体の背景色*/
+	text-align:center;		/*IE6以下でセンタリングするための対策*/
+
+  width:1000px;margin:0 auto;	/*内容全体をセンタリング*/
+	text-align:left;	/*テキストの配置を左揃えにする*/
+	background-color:#E0FFFF;		/*内容全体の背景色*/
+
+}
+
+div#div1 {
+
+	width:810px; margin:0 auto;	/*内容全体をセンタリング*/
+	text-align:left;	/*テキストの配置を左揃えにする*/
+	background-color:#ffffff;		/*内容全体の背景色*/
+
+  padding: 0.5em 1em;
+      margin: 2em 0;
+      border: double 5px #4ec4d3;
+}
+
+div#div2 {
+
+	width:400px; margin:0 auto;	/*内容全体をセンタリング*/
+	text-align:left;	/*テキストの配置を左揃えにする*/
+}
+
+ul, ol {
+  width:230px; margin:0 auto;
+  background: #8ED1E0;
+  box-shadow: 0px 0px 0px 10px #8ED1E0;/*線の外側*/
+  border: dashed 2px #E0FFFF;/*破線*/
+  border-radius: 9px;
+  margin-left: 10px;/*はみ出ないように調整*/
+  margin-right: 10px;/*はみ出ないように調整*/
+  padding: 0.5em 0.5em 0.5em 2em;
+}
+
+ul li, ol li {
+  line-height: 1.5;
+  padding: 0.5em 0;
+}

@@ -34,36 +34,39 @@ public class Data extends HttpServlet{
             System.err.println("Exception occured");
         }
 
+        //generate data
+        int clusterMakeNum = Integer.parseInt(request.getParameter("mak"));
+        if(clusterMakeNum == 0)
+            clusterMakeNum = (int)(Math.random()*3) + 2;
+        int tuning = Integer.parseInt(request.getParameter("tun"));
+        DataGenerator dg = new DataGenerator(clusterMakeNum, tuning);
+        ArrayList<Sample> samples = dg.generate();        
         //set a streamer
         response.setContentType("text/plain; charset=UTF-8");
         PrintWriter out = response.getWriter();
-	
-        //generate data
-        //int cluter_num = 3;
-        //DataGenerator dg = new DataGenerator(cluster_num);
-        //JSONPARSER(dg.generate());
-        ArrayList<ArrayList<Double>> data = new ArrayList<ArrayList<Double>>();
-        ArrayList<Double> element;
-        final int N = 20;
-        for(int i = 0; i < N; i++){
-            element = new ArrayList<Double>();
-            element.add(Math.random());
-            element.add(Math.random());
-            data.add(element);
-        }
         
         //convert to JSON
         mapper = new ObjectMapper();
-        json = mapper.writeValueAsString(data);
+        json = mapper.writeValueAsString(samples);
         out.println(json);
         out.flush();
         out.close();
 
         //start learning
-
+        int k = Integer.parseInt(request.getParameter("clu"));
+        double lambda = Integer.parseInt(request.getParameter("thr"));
+        Clustering clustering;
+        if(Integer.parseInt(request.getParameter("alg")) == 0){
+            clustering = new Clustering(samples, 0.0, 1.0, "K", k);
+        }else{
+            clustering = new Clustering(samples, 0.0, 1.0, "DP", lambda*0.1);
+        }
+        
+        clustering.init();
+        clustering.fit();
 
         //conver the result of learning to JSON
-
+        json = clustering.getJson();
 
         //save as a JSON file
         try{

@@ -3,7 +3,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 
-public class KMeans {
+public class Clustering {
     
     //Attributes for test
     private final static int NUM_POINTS = 15;
@@ -12,7 +12,8 @@ public class KMeans {
     private double minCoordinate = 0;
     private double maxCordinate = 1;
 
-    private int numClusters = 3;
+    private int k = 1;
+    private double lambda = 0.2;
     
     private ArrayList<Point> points;
     private ArrayList<Cluster> clusters;
@@ -20,25 +21,40 @@ public class KMeans {
     private ArrayList<Sample> generatedData = null;
 
     private String json;
+    
+    private String method = "K";
 
-    public KMeans() {
+    public Clustering() {
         this.points = new ArrayList<Point>();
         this.clusters = new ArrayList();
     }
     
-    public KMeans(int k, ArrayList<Sample> data, double min, double max) {
+    public Clustering(ArrayList<Sample> data, double min, double max) {
         this();
-        this.numClusters = k;
         this.generatedData = data;
         this.minCoordinate = min;
         this.maxCordinate = max;
+    }
+    
+    public Clustering(ArrayList<Sample> data, double min, double max, String method, int k) {
+        this(data, min, max);
+        assert method.equals("K") || method.equals("k");
+        this.method = "K";
+        this.k = k;
+    }
+    
+    public Clustering(ArrayList<Sample> data, double min, double max, String method, double lambda) {
+        this(data, min, max);
+        assert method.equals("DP") || method.equals("dp");
+        this.method = "DP";
+        this.lambda = lambda;
     }
 
     public static void main(String[] args)  throws JsonProcessingException {
 
         DataGenerator dg = new DataGenerator(3);
         
-        KMeans kmeans = new KMeans(3, dg.generate(), 0.0, 1.0);
+        Clustering kmeans = new Clustering(dg.generate(), 0.0, 1.0, "DP", 0.2);
         //KMeans kmeans = new KMeans();
         kmeans.init();
         kmeans.fit();
@@ -59,7 +75,8 @@ public class KMeans {
         }
 
         //Create Clusters + Set Random Centroids
-        for (int i = 0; i < numClusters; i++) {
+        for (int i = 0; i < k; i++) {
+            System.out.println(i);
             Cluster cluster = new Cluster(i);
             Point centroid;
             if(generatedData == null){
@@ -85,11 +102,11 @@ public class KMeans {
         Out out = new Out();
 
         while(e != 0) {
-
+            System.out.println(iteration);
             clearClusters();
             lastCentroids = getCentroids();
 
-            assignCluster();
+            assignCluster(iteration);
             calculateCentroids();
 
             currentCentroids = getCentroids();
@@ -99,8 +116,12 @@ public class KMeans {
             out.setToIter(clusters.size(), currentCentroids, clusterLabels);
             
             e = 0.0;
-            for(int i = 0; i < lastCentroids.size(); i++)
-                e += Point.distance(lastCentroids.get(i),currentCentroids.get(i));
+            if(currentCentroids.size() == lastCentroids.size()){
+                for(int i = 0; i < lastCentroids.size(); i++)
+                    e += Point.distance(lastCentroids.get(i),currentCentroids.get(i));
+            }else{
+                e = Double.MAX_VALUE;
+            }
             iteration++;
         }
 
@@ -114,7 +135,7 @@ public class KMeans {
     }
 
     private ArrayList<Point> getCentroids() {
-        ArrayList<Point> centroids = new ArrayList<Point>(numClusters);
+        ArrayList<Point> centroids = new ArrayList<Point>(k);
         for(Cluster cluster : clusters) {
             Point aux = cluster.getCentroid();
             Point point = new Point(aux.getX(),aux.getY());
@@ -123,7 +144,7 @@ public class KMeans {
         return centroids;
     }
 
-    private void assignCluster() {       
+    private void assignCluster(int iter) {       
         double min;
         Cluster minCluster = null;
         double distance;
@@ -138,9 +159,30 @@ public class KMeans {
                 }
             }
             assert minCluster != null : "minCluster is null";
-            point.setCluster(minCluster.getId());
-            clusters.get(minCluster.getId()).addPoint(point);
+            if(this.method.equals("DP") && min > lambda){
+                k++;
+                Cluster cluster = new Cluster(k);
+                point.setCluster(k);
+                cluster.centroid = point;
+                cluster.points.add(point);
+                clusters.add(cluster);
+                minCluster.removePoint(point);
+                Cluster removeCluster = null;
+                if(iter != 1){
+                    for(Cluster retCluster : clusters){
+                        if(cluster.points.isEmpty()){
+                            removeCluster = retCluster;
+                        }
+                    }
+                    clusters.remove(removeCluster);
+                }
+            }else{
+                point.setCluster(minCluster.getId());
+                minCluster.addPoint(point);
+            }
+
         }
+        
     }
 
     private void calculateCentroids() {

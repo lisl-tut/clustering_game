@@ -1,19 +1,24 @@
-package com.dataonfocus.clustering;
-
 import java.util.ArrayList;
 
+/**
+ * this class is for output of json files.
+ */
 public class Out {
-    //public String out1;
-    //public String out2;
-    public int iter;
+    public int iters;
     public boolean success;
-    //public ArrayList<Point> centroid;
-    //public ArrayList<Point>[] centroid;
-    public ArrayList<ArrayList<Point>> centroid = new ArrayList<>();
-    //public ArrayList<Integer> clusterallocation = new ArrayList<Integer>();
-    //public ArrayList<Integer>[] clusterallocation = new ArrayList<>();
-    public ArrayList<ArrayList<Integer>> clusterallocation = new ArrayList<>();
+    public ArrayList<Iter> result = new ArrayList<>();
+        
+    public void setToIter(int clusterNum, ArrayList<Point> centroid,ArrayList<Integer> allocation){
+        Iter iter = new Iter();
+        iter.centroid = centroid;
+        iter.allocation = allocation;
+        iter.clusterNum = clusterNum;
+        result.add(iter);
+    }
+}
 
-
-
+class Iter{
+    public int clusterNum;
+    public ArrayList<Point> centroid = new ArrayList<>();
+    public ArrayList<Integer> allocation = new ArrayList<>();
 }
