@@ -66,6 +66,7 @@ function init() {
     //colorPosData.push(new makeColorPosData(canvas.width / 2 - objWidth / 2, canvas.height / 2 - objHeight / 2, fixedR, 180, 90));
     // ユーザ操作履歴初期化
     initColorPosData.push(new makeUserOprHistory(i, initX, initY, colorPosData[index].g, colorPosData[index].b));
+	//alert("cccc"+colorPosData[index].g);
   }
   //console.log(userOprHistory.length);
   // ユーザ操作によるクラスタ中心を生成
@@ -120,6 +121,8 @@ function onMove(e){
 }
 function onUp(e){
   if(dragging){
+    var selectedIndex = colorPosData.length - 1;
+	
     var oldCL = colorPosData[colorPosData.length-1].clusterLabel;
     dragging = false;
     // クラスタ所属判定
@@ -135,7 +138,7 @@ function onUp(e){
 	  userHistory.push(new makeUserHistory(null, null, null));
 	}
 	//for(var i=0; i<colorPosData.length; i++){
-    userOprHistory.push(new makeUserOprHistory(changeCL, colorPosData[changeCL].x, colorPosData[changeCL].y, colorPosData[changeCL].g, colorPosData[changeCL].b));
+    userOprHistory.push(new makeUserOprHistory(colorPosData[selectedIndex].id, colorPosData[selectedIndex].x, colorPosData[selectedIndex].y, colorPosData[selectedIndex].g, colorPosData[selectedIndex].b));
 	//}
     // 所属クラスタが変わった場合のみ
     /*if(oldCL !== changeCL){
