@@ -54,6 +54,9 @@ public class Data extends HttpServlet{
 
         //start learning
         int k = Integer.parseInt(request.getParameter("clu"));
+        if(Integer.parseInt(request.getParameter("mak")) == 0){
+            k = clusterMakeNum;
+        }
         double lambda = Integer.parseInt(request.getParameter("thr"));
         Clustering clustering;
         if(Integer.parseInt(request.getParameter("alg")) == 0){
