@@ -9,7 +9,7 @@ Overview
 計算量が莫大になることを想定して計算をサーバーに任せるスタンスをとりました。
 
 ## Demo
-![result](https://github.com/tutlisl/clustering_game/blob/media/demotag1-0.gif
+![alt text](https://github.com/tutlisl/clustering_game/blob/media/demotag1-0.gif
 
 ## VS. 
 
