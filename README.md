@@ -11,6 +11,9 @@ Overview
 ## Demo
 ![demo](https://raw.githubusercontent.com/tutlisl/clustering_game/media/demotag1-0.gif)
 
+黒色のリングが載っている色丸がクラスタ中心を表し、バッテンが人間が分類しているクラスタ中心を表しています。
+ユーザーの分類と全く同じであれば黒色のリングとバッテンが全て一致します。
+
 ## VS. 
 
 ## Requirement
