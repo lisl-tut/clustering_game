@@ -91,27 +91,7 @@
     <div id="request"></div>
     <div id="test"></div>
 
-    <script>
-    window.onload = function () {
-      $("#clusterNum").prop('disabled', true);
-      $("#threshold").prop('disabled', true);
-    };
-    function algorithmSelected(value){
-      var kmeansObj = document.getElementById("clusterNum");
-      var dpmeansObj = document.getElementById("threshold");
-      if(value == "0"){
-          kmeansObj.disabled = false;
-          dpmeansObj.disabled = true;
-          document.getElementById("threshold").value = "2";
-      }else if(value == "1"){
-          kmeansObj.disabled = true;
-          dpmeansObj.disabled = false;
-          document.getElementById("clusterNum").value = "2";
-      }
-      location.reload();
-    }
-    </script>
-
+    <script type="text/javascript" src="./js/menu.js" charset="utf-8"></script>
     <script type="text/javascript" src="./js/interface.js" charset="utf-8"></script>
     <script type="text/javascript" src="./js/animation.js" charset="utf-8"></script>
 
