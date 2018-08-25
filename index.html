@@ -93,8 +93,8 @@
 
     <script>
     window.onload = function () {
-      var kmeansObj = document.getElementById("clusterNum");
-      kmeansObj.disabled = false;
+      $("#clusterNum").prop('disabled', true);
+      $("#threshold").prop('disabled', true);
     };
     function algorithmSelected(value){
       var kmeansObj = document.getElementById("clusterNum");
