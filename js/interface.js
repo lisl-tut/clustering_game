@@ -50,14 +50,24 @@ function makeUserOprHistory(id, x, y, g, b){
   this.b = b;
 }
 
-// 一番最初に呼ばれる処理
+// 決定ボタンを押したときに呼ばれる
 function init() {
 
+  console.log("init")
   // データがサーバーから送られていなかったときは何もしない
   if(typeof data_json_str === "undefined" || data_json_str == ""){
+    console.log("aa")
     repaint();
     return;
   }
+
+  $('#tutorial').attr('width', $('#div1').width()/2.1);
+  $('#tutorial').attr('height', $('#div1').height());
+  $('#tutorial2').attr('width', $('#div1').width()/2.1);
+  $('#tutorial2').attr('height', $('#div1').height());
+  $('#tutorial').css('visibility', 'visible')
+  $('#tutorial2').css('visibility', 'visible')
+
   // サーバーから送られてきたデータをパースする
   var gbArray = JSON.parse(data_json_str);
   
