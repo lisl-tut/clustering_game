@@ -66,6 +66,7 @@ function init() {
   if(userClusterCenter.length > 0){userClusterCenter = [];}
   if(userHistory.length > 0){userHistory = [];}
   if(userOprHistory.length > 0){userOprHistory = [];}
+  
   // データ点の配列を生成
   for(var i=0; i<gbArray.length; i++){
     var xMax = canvas.width - radius;

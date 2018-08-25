@@ -17,14 +17,14 @@ body {
 
 div#div1 {
 
-  width:850px;
+  width: 90%;
+  height: 60%;
   margin:100 auto;	/*内容全体をセンタリング*/
   text-align:center;	/*テキストの配置を左揃えにする*/
   background-color:#ffffff;		/*内容全体の背景色*/
 
   padding: 0.5em 1em;
   border: double 5px #4ec4d3;
-
 }
 
 div#div2 {
