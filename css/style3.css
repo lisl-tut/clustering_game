@@ -4,7 +4,6 @@
 }
 
 body {
-
 	background-color:#999999;	/*ページ全体の背景色*/
 	text-align:center;		/*IE6以下でセンタリングするための対策*/
 
@@ -24,7 +23,7 @@ div#div1 {
 	background-color:#ffffff;		/*内容全体の背景色*/
 
 	padding: 0.5em 1em;
-			border: double 5px #4ec4d3;
+	border: double 5px #4ec4d3;
 
 }
 
@@ -32,4 +31,8 @@ div#div2 {
 
 	font-size: 100%;
 	color:#4ec4d3;
+}
+
+canvas {
+  border: 1px solid #999;
 }
