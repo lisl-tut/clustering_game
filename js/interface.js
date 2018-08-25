@@ -1,3 +1,24 @@
+// スクリプト読み込み時に実行される
+var initColorPosData = [];
+var colorPosData = [];  // データ点オブジェクトを格納
+var clusterNum = 4; // 左画面における識別のためのクラスタ数
+var userClusterCenter = []; // ユーザ操作により計算されるクラスタ中心
+var userHistory = []; // ユーザ操作によるクラスタ中心の移動履歴
+var userOprHistory = []; // ユーザ操作によるオブジェクトの移動履歴
+var canvas = document.getElementById("tutorial");
+var context = canvas.getContext('2d');
+var relX, relY;
+var radius = 30;
+var dragging = false;
+var fixedR = 66;
+var leftFlag;
+
+canvas.addEventListener('mousedown', onDown, false);
+canvas.addEventListener('mousemove', onMove, false);
+canvas.addEventListener('mouseup', onUp, false);
+
+init();
+
 function makeColorPosData(x, y, r, normG, normB, i){
   this.x = x; // 左画面においてのx座標
   this.y = y; // 左画面においてのy座標
@@ -29,11 +50,15 @@ function makeUserOprHistory(id, x, y, g, b){
   this.b = b;
 }
 
+// 一番最初に呼ばれる処理
 function init() {
+
+  // データがサーバーから送られていなかったときは何もしない
   if(typeof data_json_str === "undefined" || data_json_str == ""){
     repaint();
     return;
   }
+  // サーバーから送られてきたデータをパースする
   var gbArray = JSON.parse(data_json_str);
   
   // 決定ボタンを二回目以降押したときのために配列をそれぞれリセット
@@ -43,7 +68,6 @@ function init() {
   if(userOprHistory.length > 0){userOprHistory = [];}
   // データ点の配列を生成
   for(var i=0; i<gbArray.length; i++){
-  //for(var i=0; i<2; i++){
     var xMax = canvas.width - radius;
     var xMin = radius;
     var yMax = canvas.height - radius;
@@ -212,22 +236,3 @@ function repaint(){
 }
 
 
-// スクリプト読み込み時に実行される
-var initColorPosData = [];
-var colorPosData = [];  // データ点オブジェクトを格納
-var clusterNum = 4; // 左画面における識別のためのクラスタ数
-var userClusterCenter = []; // ユーザ操作により計算されるクラスタ中心
-var userHistory = []; // ユーザ操作によるクラスタ中心の移動履歴
-var userOprHistory = []; // ユーザ操作によるオブジェクトの移動履歴
-var canvas = document.getElementById("tutorial");
-var context = canvas.getContext('2d');
-var relX, relY;
-var radius = 30;
-var dragging = false;
-var fixedR = 66;
-var leftFlag;
-
-canvas.addEventListener('mousedown', onDown, false);
-canvas.addEventListener('mousemove', onMove, false);
-canvas.addEventListener('mouseup', onUp, false);
-init();
