@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <title>Canvas tutorial</title>
 
-		<!-- Import prettify files -->
+    <!-- Import prettify files -->
     <link href="src/google-code-prettify/prettify.css" type="text/css" rel="stylesheet" />
     <script type="text/javascript" src="src/google-code-prettify/prettify.js"></script>
 
@@ -24,30 +24,25 @@
         }
       }
     </script>
-    <style type="text/css">
-      canvas { border: 1px solid #999; }
-    </style>
   </head>
   <body onload="draw();">
 
-    <div  id="div2" class="navbar-fixed">
+    <div id="div2" class="navbar-fixed">
       <nav>
-        <div class="nav-wrapper  blue accent-1">
+        <div class="nav-wrapper blue accent-1">
           <a href="#" class="brand-logo right">Clustering_game</a>
-          <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
           <ul id="nav-mobile" class="left hide-on-med-and-down">
-
             <form name="settei" method="get">
               <li>
-            アルゴリズムの種類
-              <select name="algorithm" id="algorithm" size="1" onChange="algorithmSelected(value)">
-                <option value="0" id="kmeans">K-means</option>
-                <option value="1" id="dpmeans">DP-means</option>
-              </select>
+                アルゴリズムの種類
+                <select name="algorithm" id="algorithm" size="1" onChange="algorithmSelected(value)">
+                  <option value="0" id="kmeans">K-means</option>
+                  <option value="1" id="dpmeans">DP-means</option>
+                </select>
               </li>
               <li>
-                クラスタ数 <!-- ユーザには非表示 -->
-                <select name="clusterNum" id="clusterNum" size="1" disabled=false>
+              クラスタ数
+                <select name="clusterNum" id="clusterNum" size="1" disabled>
                   <option value="2">K=2</option>
                   <option value="3">K=3</option>
                   <option value="4">K=4</option>
@@ -55,7 +50,7 @@
               </li>
               <li>
                 ペナルティパラメータ <!-- ユーザには非表示? -->
-                <select name="threshold" id="threshold" size="1" disabled=true>
+                <select name="threshold" id="threshold" size="1" disabled>
                   <option value="1">&#955;=small</option>
                   <option value="2">&#955;=medium</option>
                   <option value="3">&#955;=large</option>
@@ -63,7 +58,7 @@
               </li>
               <li>
                 生成するクラスタ数 <!-- ユーザには非表示 -->
-                <select name="makeClusterNum" id="makeClusterNum" size="1"> <!--style="visibility:hidden">!-->
+                <select name="makeClusterNum" id="makeClusterNum" size="1">
                   <option value="0">R</option>
                   <option value="2">2</option>
                   <option value="3">3</option>
@@ -81,13 +76,10 @@
               <a class="waves-effect blue accent-2 btn" name="action" value="send" onclick="getData()">決定</a>
               <a class="waves-effect blue accent-2 btn" name="kotaeawase" value="send" onclick="getLearn()">答え合わせ</a>
               <a class="waves-effect blue accent-2 btn" name="reloadbutton" value="send" onclick="location.reload()">リロード</a>
-
-
-
             </form>
           </ul>
         </div>
-      </anv>
+      </nav>
     </div>
 
     <div id="div1">
@@ -99,31 +91,7 @@
     <div id="request"></div>
     <div id="test"></div>
 
-
-
-    <script>
-    window.onload = function () {
-      var kmeansObj = document.getElementById("clusterNum");
-      kmeansObj.disabled = false;
-    };
-      function algorithmSelected(value){
-        var kmeansObj = document.getElementById("clusterNum");
-        var dpmeansObj = document.getElementById("threshold");
-        if(value == "0"){
-            kmeansObj.disabled = false;
-            dpmeansObj.disabled = true;
-            document.getElementById("threshold").value = "2";
-        }else if(value == "1"){
-            kmeansObj.disabled = true;
-            dpmeansObj.disabled = false;
-            document.getElementById("clusterNum").value = "2";
-        }
-        location.reload();
-      }
-
-
-    </script>
-
+    <script type="text/javascript" src="./js/menu.js" charset="utf-8"></script>
     <script type="text/javascript" src="./js/interface.js" charset="utf-8"></script>
     <script type="text/javascript" src="./js/animation.js" charset="utf-8"></script>
 
@@ -135,8 +103,6 @@
 
     <!-- Import my script -->
     <script type="text/javascript" src="src/myScript.js"></script>
-
-
 
   </body>
 </html>
