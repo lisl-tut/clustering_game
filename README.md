@@ -32,5 +32,7 @@
 - GeneralタブのPath to executableにあるパスを参考にしながら、Tomcat7/webapps ディレクトリ直下に移動して`git clone https://github.com/lisl-tut/clustering_game.git` (Permissionエラーが起きたら管理者権限でgitを使うこと)
 - ブラウザ上で[http://localhost:8080/clustering_game/](http://localhost:8080/clustering_game/)にアクセス
 
+※現状Firefoxのみサポート
+
 ## Contribution
 2017's LISL members
