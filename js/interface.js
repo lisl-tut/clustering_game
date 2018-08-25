@@ -30,17 +30,10 @@ function makeUserOprHistory(id, x, y, g, b){
 }
 
 function init() {
-  //leftFlag = true;
-  // ユーザー用オブジェクト生成
-  
-  // JSONデータを配列へ
-  //var testJson = '[{"cluster":0,"point":[0.30293765954862756,0.3849310722222656]},{"cluster":1,"point":[0.08036268578171582,0.20346417834021638]}]';
-  //var testJson = '[{"cluster":0,"point":[0.30293765954862756,0.3849310722222656]},{"cluster":1,"point":[0.5,0.9]}]';
-  // JSONデータがないときは線を引くだけ
- // if(typeof testJson === "undefined" || testJson == ""){repaint();return;}
-  if(typeof data_json_str === "undefined" || data_json_str == ""){repaint();return;}
- // var gbArray = JSON.parse(testJson);
-//  console.log("jsonTest:"+gbArray[1]["cluster"]);
+  if(typeof data_json_str === "undefined" || data_json_str == ""){
+    repaint();
+    return;
+  }
   var gbArray = JSON.parse(data_json_str);
   
   // 決定ボタンを二回目以降押したときのために配列をそれぞれリセット
@@ -58,48 +51,35 @@ function init() {
     var initX = Math.floor( Math.random() * (xMax + 1 - xMin) ) + xMin ;
     var initY = Math.floor( Math.random() * (yMax + 1 - yMin) ) + xMin ;
     
-    //var initG = Math.random();
-    //var initB = Math.random();
     colorPosData.push(new makeColorPosData(initX, initY, fixedR, gbArray[i]["point"][0], gbArray[i]["point"][1], i));
     var index = colorPosData.length-1;
     colorPosData[index].clusterLabel = dataRecognize(index);
-    //colorPosData.push(new makeColorPosData(canvas.width / 2 - objWidth / 2, canvas.height / 2 - objHeight / 2, fixedR, 180, 90));
     // ユーザ操作履歴初期化
     initColorPosData.push(new makeUserOprHistory(i, initX, initY, colorPosData[index].g, colorPosData[index].b));
-	//alert("cccc"+colorPosData[index].g);
   }
-  //console.log(userOprHistory.length);
   // ユーザ操作によるクラスタ中心を生成
   for(var i=0; i<clusterNum; i++){
     userClusterCenter.push(new makeUserClusterCenter());  // 生成
     userCalcClusterCenter(i);
     // 初期クラスタを保存
-	if(userClusterCenter[i].g === null && userClusterCenter[i].b === null){ 
-		userHistory.push(new makeUserHistory(i, null, null));
-	}else{
-		userHistory.push(new makeUserHistory(i, Math.round(userClusterCenter[i].g*255), Math.round(userClusterCenter[i].b*255)));
-	}
-//	alert(userHistory[i].id+",g"+userHistory[i].g+","+userHistory[i].b);
-    //console.log("yuz"+userHistory.length);
-    console.log(i + ", " +userClusterCenter[i].g +"," + userClusterCenter[i].b);
+    if(userClusterCenter[i].g === null && userClusterCenter[i].b === null){ 
+      userHistory.push(new makeUserHistory(i, null, null));
+    }else{
+      userHistory.push(new makeUserHistory(i, Math.round(userClusterCenter[i].g*255), Math.round(userClusterCenter[i].b*255)));
+    }
   }
   repaint();
 }
+
 function onDown(e) {
   var offsetX = canvas.getBoundingClientRect().left;
   var offsetY = canvas.getBoundingClientRect().top;
-  //console.log(offsetX+","+offsetY);
-  //console.log(e.clientX+","+e.clientY);
   var x = e.clientX - offsetX;
   var y = e.clientY - offsetY;
   var selectedIndex;
   for(var i=0; i<colorPosData.length; i++){
-    // 長方形の判定
-    /*if (colorPosData[i].x < x && (colorPosData[i].x + objWidth) > x 
-      && colorPosData[i].y < y && (colorPosData[i].y + objHeight) > y) {*/
     // 円の判定
     if(Math.sqrt(Math.pow(colorPosData[i].x-x,2)+Math.pow(colorPosData[i].y-y,2)) < radius){
-      console.log(i);
       selectedIndex = i;
       dragging = true;
     }
@@ -151,32 +131,23 @@ function dataRecognize(i){
   if(colorPosData[i].x < canvas.width/2){
     if(colorPosData[i].y < canvas.height/2){
       // 左上
-      //console.log("左上");
-      //alert("左上");
       userClusterLabel = 0;
     }else{
       // 左下
-      //console.log("左下");
-      //alert("左下");
       userClusterLabel = 1;
     }
   }else{
     if(colorPosData[i].y < canvas.height/2){
       // 右上
-      //console.log("右上");
-      //alert("右上");
       userClusterLabel = 2;
     }else{
       // 右下
-      //console.log("右下");
-      //alert("右下");
       userClusterLabel = 3;
     }
   }
   return userClusterLabel;
 }
 function userDataAllocate(){
-  //console.log(selectedIndex);
   var selectedIndex = colorPosData.length - 1;
   colorPosData[selectedIndex].clusterLabel = dataRecognize(selectedIndex);
   return colorPosData[selectedIndex].clusterLabel;
