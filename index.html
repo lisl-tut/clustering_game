@@ -4,7 +4,7 @@
     <meta http-equiv="Cache-Control" content="no-cache">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta charset="UTF-8">
-    <title>Canvas tutorial</title>
+    <title>Clustering Game</title>
 
     <!-- Import prettify files -->
     <link href="src/google-code-prettify/prettify.css" type="text/css" rel="stylesheet" />
@@ -16,19 +16,8 @@
 
     <script type="text/javascript" src="./js/communicate.js" charset="utf-8"></script>
     <script type="text/javascript" src="./js/trajectory.js" charset="utf-8"></script>
-    <script type="text/javascript">
-      function draw(){
-        var canvas = document.getElementById("tutorial");
-        canvas.style.visibility="hidden";
-        document.getElementById("tutorial2").style.visibility="hidden";
-        if (canvas.getContext){
-          var ctx = canvas.getContext('2d');
-        }
-      }
-    </script>
   </head>
-  <body onload="draw();">
-
+  <body>
     <div id="div2" class="navbar-fixed">
       <nav>
         <div class="nav-wrapper blue accent-1">
