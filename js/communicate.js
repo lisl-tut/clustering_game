@@ -1,13 +1,5 @@
 DEBUG_MODE = false;
 
-function sendRequest(){
-    var url='HelloWorld';
-    var request = new XMLHttpRequest();
-    request.open('GET', url, false);
-    request.send(null);
-    document.getElementById("hoge").textContent = request.responseText;
-}
-
 var data_json_str;
 var learn_json_str;
 
@@ -66,8 +58,4 @@ function getLearn(){
       document.getElementById("test").textContent = learn_json_str;
     }
     playAnime();
-}
-
-function rewrite(){
-    document.getElementById("hoge").textContent = "watanabe";
 }
