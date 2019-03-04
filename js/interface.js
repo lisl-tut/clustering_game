@@ -17,7 +17,9 @@ canvas.addEventListener('mousedown', onDown, false);
 canvas.addEventListener('mousemove', onMove, false);
 canvas.addEventListener('mouseup', onUp, false);
 
-init();
+repaint();
+$('#tutorial').css('visibility', 'hidden');
+$('#tutorial2').css('visibility', 'hidden');
 
 function makeColorPosData(x, y, r, normG, normB, i){
   this.x = x; // 左画面においてのx座標
@@ -52,14 +54,6 @@ function makeUserOprHistory(id, x, y, g, b){
 
 // 決定ボタンを押したときに呼ばれる
 function init() {
-
-  console.log("init")
-  // データがサーバーから送られていなかったときは何もしない
-  if(typeof data_json_str === "undefined" || data_json_str == ""){
-    console.log("aa")
-    repaint();
-    return;
-  }
 
   $('#tutorial').attr('width', $('#div1').width()/2.1);
   $('#tutorial').attr('height', $('#div1').height());
