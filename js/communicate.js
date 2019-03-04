@@ -5,7 +5,7 @@ var learn_json_str; // 学習結果データを保存しておくための変数
 // フォームからゲームルールを取得してURLのパラメータの文字列を返す
 function makeReqParams(){
   var form = document.settei;  //フォーム
-  var params = " ?"; //パラメータ
+  var params = "?"; //パラメータ
 
   //kind of Algorithm
   var index = form.algorithm.selectedIndex;
