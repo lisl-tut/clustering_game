@@ -1,5 +1,3 @@
-DEBUG_MODE = false;
-
 var data_json_str;
 var learn_json_str;
 
@@ -34,16 +32,10 @@ function getData(){
     var tun_value = form.tuning.options[index].value;
     params += "&tun=" + tun_value;
 
-    if(DEBUG_MODE){
-      document.getElementById("request").textContent = url+params;
-    }
     var request = new XMLHttpRequest();
     request.open('GET', url+params, false);
     request.send(null);
     data_json_str = request.responseText;
-    if(DEBUG_MODE){
-      document.getElementById("test").textContent = data_json_str;
-    }
     init();
     leftFlag = true;
 }
@@ -54,8 +46,5 @@ function getLearn(){
     request.open('GET', url, false);
     request.send(null);
     learn_json_str = request.responseText;
-    if(DEBUG_MODE){
-      document.getElementById("test").textContent = learn_json_str;
-    }
     playAnime();
 }
