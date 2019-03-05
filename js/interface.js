@@ -1,12 +1,13 @@
 // スクリプト読み込み時に実行される
+var canvas = document.getElementById("tutorial");
+var context = canvas.getContext('2d');
+
 var initColorPosData = [];
 var colorPosData = [];  // データ点オブジェクトを格納
 var clusterNum = 4; // 左画面における識別のためのクラスタ数
 var userClusterCenter = []; // ユーザ操作により計算されるクラスタ中心
 var userHistory = []; // ユーザ操作によるクラスタ中心の移動履歴
 var userOprHistory = []; // ユーザ操作によるオブジェクトの移動履歴
-var canvas = document.getElementById("tutorial");
-var context = canvas.getContext('2d');
 var relX, relY;
 var radius = 30;
 var dragging = false;
@@ -54,13 +55,13 @@ function makeUserOprHistory(id, x, y, g, b){
 
 // 決定ボタンを押したときに呼ばれる
 function init() {
-
+  data_json_str = getData();
   $('#tutorial').attr('width', $('#div1').width()/2.1);
   $('#tutorial').attr('height', $('#div1').height());
   $('#tutorial2').attr('width', $('#div1').width()/2.1);
   $('#tutorial2').attr('height', $('#div1').height());
-  $('#tutorial').css('visibility', 'visible')
-  $('#tutorial2').css('visibility', 'visible')
+  $('#tutorial').css('visibility', 'visible');
+  $('#tutorial2').css('visibility', 'visible');
 
   // サーバーから送られてきたデータをパースする
   var gbArray = JSON.parse(data_json_str);
@@ -98,6 +99,7 @@ function init() {
     }
   }
   repaint();
+  leftFlag = true;
 }
 
 function onDown(e) {
@@ -120,6 +122,7 @@ function onDown(e) {
     colorPosData.splice(selectedIndex, 1);
   }
 }
+
 function onMove(e){
   var selectedIndex = colorPosData.length - 1;
   var offsetX = canvas.getBoundingClientRect().left;
@@ -204,40 +207,38 @@ function userCalcClusterCenter(changeCL){
   }
 }
 
-function drawLine(){
+// 軸を描画する
+function drawAxes(){
   context.strokeStyle = 'rgba(0, 0, 0,1)';
-  // 横線
+  // 横軸
   context.beginPath();
   context.moveTo(0, canvas.height/2);
   context.lineTo(canvas.width, canvas.height/2);
   context.stroke();
-  
-  // 縦線
+  // 縦軸
   context.beginPath();
   context.moveTo(canvas.width/2, 0);
   context.lineTo(canvas.width/2, canvas.height);
   context.stroke();
 }
-function drawCircle(i, plotObj){
+
+function drawCircle(plotObj){
   // 円を塗りつぶす
-  context.fillStyle = 'rgba('+fixedR+','+plotObj[i].g+','+plotObj[i].b+',1)';
+  context.fillStyle = 'rgba('+fixedR+','+plotObj.g+','+plotObj.b+',1)';
   context.beginPath();
-  context.arc(plotObj[i].x, plotObj[i].y, radius, 0, Math.PI*2, false);
+  context.arc(plotObj.x, plotObj.y, radius, 0, Math.PI*2, false);
   context.fill();
-    
   // 円の縁取り
   context.strokeStyle = 'rgba(0, 0, 0,1)';
   context.beginPath();
-  context.arc(plotObj[i].x, plotObj[i].y, radius, 0, Math.PI*2, false);
+  context.arc(plotObj.x, plotObj.y, radius, 0, Math.PI*2, false);
   context.stroke();
 }
   
 function repaint(){
   context.clearRect(0, 0, canvas.width, canvas.height);
-  drawLine();
+  drawAxes();
   for(var i=0; i<colorPosData.length; i++){
-    drawCircle(i, colorPosData);
+    drawCircle(colorPosData[i]);
   }
 }
-
-

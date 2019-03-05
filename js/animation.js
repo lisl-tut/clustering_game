@@ -153,7 +153,7 @@ function playAnime(){
 
     plotClusterCenterHistory(userHistory, i, 0); //userのクラスタ中心の履歴の描画
 	
-	drawLine();
+	drawAxes();
 	// 左画面描画
 	drawTrajectory(t);
 	t++;

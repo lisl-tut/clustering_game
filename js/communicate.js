@@ -33,12 +33,10 @@ function makeReqParams(){
 
 // 決定ボタンを押したときに呼ばれる関数
 function getData(){
-    var request = new XMLHttpRequest();
-    request.open('GET', 'Data'+makeReqParams(), false);
-    request.send(null);
-    data_json_str = request.responseText;
-    init();
-    leftFlag = true;
+  var request = new XMLHttpRequest();
+  request.open('GET', 'Data'+makeReqParams(), false);
+  request.send(null);
+  return request.responseText;
 }
 
 function getLearn(){

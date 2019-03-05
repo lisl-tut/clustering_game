@@ -5,14 +5,9 @@ function drawTrajectory(iter){
   if(colorPosDataForTrajectory.length <= iter){ 
     iterIndex = colorPosDataForTrajectory.length - 1;
   }
-
-console.log(colorPosDataForTrajectory[iterIndex].length+"label");
   for(var i=0; i<colorPosDataForTrajectory[iterIndex].length; i++){
-  //alert(colorPosDataForTrajectory[iter][i].x+"xxxxxxx");
- // alert(colorPosDataForTrajectory[iter][i].g+"iterrrr");
-    drawCircle(i, colorPosDataForTrajectory[iterIndex]);
+    drawCircle(colorPosDataForTrajectory[iterIndex][i]);
   }
-  //alert("tettttttttttt");
 }
 
 //call once
