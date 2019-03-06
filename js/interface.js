@@ -1,26 +1,145 @@
 // スクリプト読み込み時に実行される
-var canvas = document.getElementById("tutorial");
+var canvas = $('#tutorial').get(0);
 var context = canvas.getContext('2d');
 
 var initColorPosData = [];
-var colorPosData = [];  // データ点オブジェクトを格納
+var colorPosData = []; // データ点オブジェクトを格納
 var clusterNum = 4; // 左画面における識別のためのクラスタ数
 var userClusterCenter = []; // ユーザ操作により計算されるクラスタ中心
 var userHistory = []; // ユーザ操作によるクラスタ中心の移動履歴
 var userOprHistory = []; // ユーザ操作によるオブジェクトの移動履歴
 var relX, relY;
-var radius = 30;
-var dragging = false;
-var fixedR = 66;
+
+var dataArray; // データ点オブジェクトを格納
+var interfaceArray;
+var interfaceHistory;
+var clusterMeanHistory;
+
+var radius = 30; //円の大きさ
+var fixedR = 66; //Rの値
+
+var dragging = false; //ドラッグ中かを示す変数
 var leftFlag;
+
+function turnCanvas(turnOn){
+  if(turnOn){
+    $('#tutorial').css('visibility', 'visible');
+    $('#tutorial2').css('visibility', 'visible');
+  }else{
+    $('#tutorial').css('visibility', 'hidden');
+    $('#tutorial2').css('visibility', 'hidden');
+  }
+}
 
 canvas.addEventListener('mousedown', onDown, false);
 canvas.addEventListener('mousemove', onMove, false);
 canvas.addEventListener('mouseup', onUp, false);
 
 repaint();
-$('#tutorial').css('visibility', 'hidden');
-$('#tutorial2').css('visibility', 'hidden');
+turnCanvas(false);
+
+class Data{
+  constructor(id, g, b, label){
+    this.id = id;
+    this.label = label;
+    this.g = g;  // 0.0 ~ 1.0の範囲で与えられる
+    this.b = b;  //
+  }
+}
+
+// 左画面の分類操作用インターフェイス
+class ColorInterface{
+  //Dataインスタンス
+  constructor(data){
+    this.x = this.allocateInitialX();
+    this.y = this.allocateInitialY();
+    // int型 0~255
+    this.id = data.id;
+    this.label = this.allocateUserLabel();
+    this.r = fixedR;
+    this.g = data.g;
+    this.b = data.b;
+  }
+  getIntG(){
+    return Math.round(this.g*ColorInterface.COLOR_MAX);
+  }
+  getIntB(){
+    return Math.round(this.b*ColorInterface.COLOR_MAX);
+  }
+  // 左画面の円の表示場所をランダムにするための初期座標を決める
+  allocateInitialX(){
+    const xMax = canvas.width - radius;
+    const xMin = radius;
+    return Math.floor( Math.random() * (xMax + 1 - xMin) ) + xMin;
+  }
+  allocateInitialY(){
+    const yMax = canvas.height - radius;
+    const yMin = radius;
+    return Math.floor( Math.random() * (yMax + 1 - yMin) ) + yMin ;
+  }
+  // インターフェイス上の座標から適切なラベルを取得する
+  allocateUserLabel(){
+    if(this.x < canvas.width/2){
+      if(this.y < canvas.height/2){
+        return 0; // 左上
+      }else{
+        return 1; // 左下
+      }
+    }else{
+      if(this.y < canvas.height/2){
+        return 2; // 右上
+      }else{
+        return 3; // 右下
+      }
+    }
+  }
+}
+ColorInterface.COLOR_MAX = 255; //色データの範囲
+// クラスタ中心の計算
+ColorInterface.calcClusterMean = function(arr){
+  var result = {};
+  var cnt = {};
+  for (let i = 0; i < arr.length; i++) {   
+    const ele = arr[i];
+    if (ele.label in result) {
+      result[ele.label]["g"] += ele.getIntG();
+      result[ele.label]["b"] += ele.getIntB();
+      cnt[ele.label]++;
+    }else{
+      result[ele.label] = {};
+      result[ele.label]["g"] = ele.getIntG();
+      result[ele.label]["b"] = ele.getIntB();
+      cnt[ele.label] = 1;
+    }
+  }
+  for (const key in cnt) {
+    result[key]["g"] = Math.round(result[key]["g"] / cnt[key]);
+    result[key]["b"] = Math.round(result[key]["b"] / cnt[key]);
+  }
+  return result;
+}
+function userCalcClusterCenter(changeCL){
+  // クラスタ中心の計算
+  // クラスタ中心の履歴を記録
+  var sumG = 0;
+  var sumB = 0;
+  var count = 0;
+  for(var i=0; i<colorPosData.length; i++){
+    if(colorPosData[i].clusterLabel === changeCL){
+      sumG += colorPosData[i].normG;
+      sumB += colorPosData[i].normB;
+      count++;
+    }
+  }
+  if(count === 0){
+    userClusterCenter[changeCL].g = null;
+    userClusterCenter[changeCL].b = null;
+  }else{
+    //console.log("count:"+count+", "+sumG+","+sumG/count);
+    userClusterCenter[changeCL].g = sumG/count;
+    userClusterCenter[changeCL].b = sumB/count;
+  }
+}
 
 function makeColorPosData(x, y, r, normG, normB, i){
   this.x = x; // 左画面においてのx座標
@@ -53,37 +172,60 @@ function makeUserOprHistory(id, x, y, g, b){
   this.b = b;
 }
 
-// 決定ボタンを押したときに呼ばれる
-function init() {
-  data_json_str = getData();
+// 変数のリセット
+function resetVariables(){
+  if(colorPosData.length > 0){colorPosData = [];}
+  if(initColorPosData.length > 0){initColorPosData = [];}
+  if(userClusterCenter.length > 0){userClusterCenter = [];}
+  if(userHistory.length > 0){userHistory = [];}
+  if(userOprHistory.length > 0){userOprHistory = [];}
+}
+
+// canvas等の大きさを調整
+function adjustComponents(){
   $('#tutorial').attr('width', $('#div1').width()/2.1);
   $('#tutorial').attr('height', $('#div1').height());
   $('#tutorial2').attr('width', $('#div1').width()/2.1);
   $('#tutorial2').attr('height', $('#div1').height());
-  $('#tutorial').css('visibility', 'visible');
-  $('#tutorial2').css('visibility', 'visible');
+}
+
+// 決定ボタンを押したときに呼ばれる
+function init() {
+
+  resetVariables();  //決定ボタンを二回押したときの対策処理
+  adjustComponents();  //コンポーネントの大きさを設定する
+  turnCanvas(true);  //canvasを可視状態にする
 
   // サーバーから送られてきたデータをパースする
-  var gbArray = JSON.parse(data_json_str);
-  
-  // 決定ボタンを二回目以降押したときのために配列をそれぞれリセット
-  if(colorPosData.length > 0){colorPosData = [];}
-  if(userClusterCenter.length > 0){userClusterCenter = [];}
-  if(userHistory.length > 0){userHistory = [];}
-  if(userOprHistory.length > 0){userOprHistory = [];}
-  
+  var gbArray = JSON.parse(getData());
+  dataArray = [];
+  for (let i = 0; i < gbArray.length; i++) {
+    const gb = gbArray[i];
+    dataArray.push(new Data(i, gb["point"][0], gb["point"][1], gb["cluster"]));
+  }
+  // インターフェイス用のインスタンス作成
+  interfaceArray = [];
+  for (let i = 0; i < gbArray.length; i++) {
+    interfaceArray.push(new ColorInterface(dataArray[i]));
+  }
+  interfaceHistory = [];
+  clusterMeanHistory = [];
+  clusterMeanHistory.push(ColorInterface.calcClusterMean(interfaceArray));
+
   // データ点の配列を生成
+  var xMax = canvas.width - radius;
+  var xMin = radius;
+  var yMax = canvas.height - radius;
+  var yMin = radius;
   for(var i=0; i<gbArray.length; i++){
-    var xMax = canvas.width - radius;
-    var xMin = radius;
-    var yMax = canvas.height - radius;
-    var yMin = radius;
     var initX = Math.floor( Math.random() * (xMax + 1 - xMin) ) + xMin ;
     var initY = Math.floor( Math.random() * (yMax + 1 - yMin) ) + xMin ;
-    
     colorPosData.push(new makeColorPosData(initX, initY, fixedR, gbArray[i]["point"][0], gbArray[i]["point"][1], i));
+    interfaceArray[i].x = initX;
+    interfaceArray[i].y = initY;
     var index = colorPosData.length-1;
     colorPosData[index].clusterLabel = dataRecognize(index);
+    interfaceArray[i].label = dataRecognize(index);
     // ユーザ操作履歴初期化
     initColorPosData.push(new makeUserOprHistory(i, initX, initY, colorPosData[index].g, colorPosData[index].b));
   }
@@ -102,62 +244,72 @@ function init() {
   leftFlag = true;
 }
 
-function onDown(e) {
-  var offsetX = canvas.getBoundingClientRect().left;
-  var offsetY = canvas.getBoundingClientRect().top;
-  var x = e.clientX - offsetX;
-  var y = e.clientY - offsetY;
-  var selectedIndex;
-  for(var i=0; i<colorPosData.length; i++){
-    // 円の判定
-    if(Math.sqrt(Math.pow(colorPosData[i].x-x,2)+Math.pow(colorPosData[i].y-y,2)) < radius){
-      selectedIndex = i;
-      dragging = true;
+function findCircle(arr, x, y, r){
+  var res = null;
+  for (let i = 0; i < arr.length; i++) {
+    const ele = arr[i];
+    if(Math.sqrt(Math.pow(ele.x - x, 2) + Math.pow(ele.y - y, 2)) < r){
+      res = i;
     }
   }
-  if(dragging){
-    relX = colorPosData[selectedIndex].x - x;
-    relY = colorPosData[selectedIndex].y - y;
-    colorPosData.push(colorPosData[selectedIndex]);
-    colorPosData.splice(selectedIndex, 1);
-  }
+  return res;
+}
+
+function onDown(e) {
+  // クリックされた位置の相対座標を取得
+  var x = e.clientX - canvas.getBoundingClientRect().left;
+  var y = e.clientY - canvas.getBoundingClientRect().top;
+  // 選択されたオブジェクトの要素番号を取得
+  var selectedIndex = findCircle(colorPosData, x, y, radius);
+  var aaa = findCircle(interfaceArray, x, y, radius);
+  dragging = selectedIndex !== null;
+  if(!dragging) return;
+  relX = colorPosData[selectedIndex].x - x;
+  relY = colorPosData[selectedIndex].y - y;
+  //表示の関係で選択したものが一番最後に来るようにする。
+  colorPosData.push(colorPosData[selectedIndex]);
+  colorPosData.splice(selectedIndex, 1);
+  interfaceArray.push(interfaceArray[aaa]);
+  interfaceArray.splice(aaa, 1);
 }
 
 function onMove(e){
+  // 動かしている最中は動かしているものが配列の後ろに来るず
   var selectedIndex = colorPosData.length - 1;
-  var offsetX = canvas.getBoundingClientRect().left;
-  var offsetY = canvas.getBoundingClientRect().top;
-  var x = e.clientX - offsetX;
-  var y = e.clientY - offsetY;
-  if (dragging) {
-    colorPosData[selectedIndex].x = x + relX;
-    colorPosData[selectedIndex].y = y + relY;
-    repaint();
-  }
+  var x = e.clientX - canvas.getBoundingClientRect().left;
+  var y = e.clientY - canvas.getBoundingClientRect().top;
+  if (!dragging) return;
+  colorPosData[selectedIndex].x = x + relX;
+  colorPosData[selectedIndex].y = y + relY;
+  interfaceArray[selectedIndex].x = x + relX;
+  interfaceArray[selectedIndex].y = y + relY;
+  repaint();
 }
+
 function onUp(e){
-  if(dragging){
-    var selectedIndex = colorPosData.length - 1;
-	
-    var oldCL = colorPosData[colorPosData.length-1].clusterLabel;
-    dragging = false;
-    // クラスタ所属判定
-    var changeCL = userDataAllocate();
-	
-	var stateClusterNum = 4;
-	// 現在のクラスタ中心をすべて保存
-	for(var i=0; i<userClusterCenter.length; i++){
+  if(!dragging) return;
+  //動かしたものは配列の後ろにある
+  var selectedIndex = colorPosData.length - 1;	
+  colorPosData[selectedIndex].clusterLabel = dataRecognize(selectedIndex);
+  interfaceArray[selectedIndex].label = interfaceArray[selectedIndex].allocateUserLabel();
+  // 現在のクラスタ中心をすべて保存
+  for(var i=0; i<userClusterCenter.length; i++){
       userCalcClusterCenter(i);
       if(userClusterCenter[i].g === null && userClusterCenter[i].b === null){ 
-	    userHistory.push(new makeUserHistory(i, null, null));
-	  }else{
-	    userHistory.push(new makeUserHistory(i, Math.round(userClusterCenter[i].g*255), Math.round(userClusterCenter[i].b*255)));
-	  }
-	}
-    userOprHistory.push(new makeUserOprHistory(colorPosData[selectedIndex].id, colorPosData[selectedIndex].x, colorPosData[selectedIndex].y, colorPosData[selectedIndex].g, colorPosData[selectedIndex].b));
+      userHistory.push(new makeUserHistory(i, null, null));
+    }else{
+      userHistory.push(new makeUserHistory(i, Math.round(userClusterCenter[i].g*255), Math.round(userClusterCenter[i].b*255)));
+    }
   }
-  console.log("履歴の数"+userOprHistory.length);
+  userOprHistory.push(new makeUserOprHistory(colorPosData[selectedIndex].id, colorPosData[selectedIndex].x, colorPosData[selectedIndex].y, colorPosData[selectedIndex].g, colorPosData[selectedIndex].b));
+  clusterMeanHistory.push(ColorInterface.calcClusterMean(interfaceArray));
+  interfaceHistory.push($.extend(true, {}, interfaceArray[selectedIndex]))
+  dragging = false;
+  console.log(clusterMeanHistory)
+  console.log(userHistory)
 }
+
+/* 消す予定 */
 function dataRecognize(i){
   var userClusterLabel;
   if(colorPosData[i].x < canvas.width/2){
@@ -179,33 +331,7 @@ function dataRecognize(i){
   }
   return userClusterLabel;
 }
-function userDataAllocate(){
-  var selectedIndex = colorPosData.length - 1;
-  colorPosData[selectedIndex].clusterLabel = dataRecognize(selectedIndex);
-  return colorPosData[selectedIndex].clusterLabel;
-}
-function userCalcClusterCenter(changeCL){
-  // クラスタ中心の計算
-  // クラスタ中心の履歴を記録
-  var sumG = 0;
-  var sumB = 0;
-  var count = 0;
-  for(var i=0; i<colorPosData.length; i++){
-    if(colorPosData[i].clusterLabel === changeCL){
-      sumG += colorPosData[i].normG;
-      sumB += colorPosData[i].normB;
-      count++;
-    }
-  }
-  if(count === 0){
-    userClusterCenter[changeCL].g = null;
-    userClusterCenter[changeCL].b = null;
-  }else{
-    console.log("count:"+count+", "+sumG+","+sumG/count);
-    userClusterCenter[changeCL].g = sumG/count;
-    userClusterCenter[changeCL].b = sumB/count;
-  }
-}
+
 
 // 軸を描画する
 function drawAxes(){

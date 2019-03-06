@@ -31,18 +31,21 @@ function makeReqParams(){
   return params;
 }
 
-// 決定ボタンを押したときに呼ばれる関数
-function getData(){
+// GETメソッドの送信 -> request.responseTextを返す
+function get(url){
   var request = new XMLHttpRequest();
-  request.open('GET', 'Data'+makeReqParams(), false);
+  request.open('GET', url, false);
   request.send(null);
   return request.responseText;
+};
+
+// 問題データをとってくる関数
+function getData(){
+  return get('Data'+makeReqParams());
 }
 
+// 答え合わせボタンを押したときに呼ばれる関数
 function getLearn(){
-    var request = new XMLHttpRequest();
-    request.open('GET', 'Learn', false);
-    request.send(null);
-    learn_json_str = request.responseText;
+    learn_json_str = get('Learn');
     playAnime();
 }
