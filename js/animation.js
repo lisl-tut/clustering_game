@@ -19,9 +19,10 @@ function playAnime(){
 	this.id = id;
   }
   // 右画面におけるデータの位置座標とクラスタへの参照ラベルを取得
-  for(var i=0; i<colorPosData.length; i++){
-    dataPoint.push(new makeDataPos(initColorPosData[i].g/255, initColorPosData[i].b/255, initColorPosData[i].g, initColorPosData[i].b, initColorPosData[i].id));
-	convRgbToPos(dataPoint[i], dataPoint[i].x, dataPoint[i].y);
+  for(var i=0; i<initialInterface.length; i++){
+    var data = initialInterface[i];
+    dataPoint.push(new makeDataPos(data.g, data.b, data.g*255, data.b*255, data.id));
+	  convRgbToPos(dataPoint[i], dataPoint[i].x, dataPoint[i].y);
   }
   // データ点をすべてRGBから画面上の位置へ変換
   function convRgbToPos(obj, colorG, colorB){

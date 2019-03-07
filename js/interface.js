@@ -2,16 +2,15 @@
 var canvas = $('#tutorial').get(0);
 var context = canvas.getContext('2d');
 
-var initColorPosData = [];
 var colorPosData = []; // データ点オブジェクトを格納
 var clusterNum = 4; // 左画面における識別のためのクラスタ数
 var userClusterCenter = []; // ユーザ操作により計算されるクラスタ中心
 var userHistory = []; // ユーザ操作によるクラスタ中心の移動履歴
-var userOprHistory = []; // ユーザ操作によるオブジェクトの移動履歴
 var relX, relY;
 
 var dataArray; // データ点オブジェクトを格納
 var interfaceArray;
+var initialInterface;
 var interfaceHistory;
 var clusterMeanHistory;
 
@@ -164,21 +163,11 @@ function makeUserHistory(id, g, b){
   this.b = b;
 }
 
-function makeUserOprHistory(id, x, y, g, b){
-  this.id = id;
-  this.x = x;
-  this.y = y;
-  this.g = g;
-  this.b = b;
-}
-
 // 変数のリセット
 function resetVariables(){
   if(colorPosData.length > 0){colorPosData = [];}
-  if(initColorPosData.length > 0){initColorPosData = [];}
   if(userClusterCenter.length > 0){userClusterCenter = [];}
   if(userHistory.length > 0){userHistory = [];}
-  if(userOprHistory.length > 0){userOprHistory = [];}
 }
 
 // canvas等の大きさを調整
@@ -226,9 +215,8 @@ function init() {
     var index = colorPosData.length-1;
     colorPosData[index].clusterLabel = dataRecognize(index);
     interfaceArray[i].label = dataRecognize(index);
-    // ユーザ操作履歴初期化
-    initColorPosData.push(new makeUserOprHistory(i, initX, initY, colorPosData[index].g, colorPosData[index].b));
   }
+  initialInterface = $.extend(true, [], interfaceArray);
   // ユーザ操作によるクラスタ中心を生成
   for(var i=0; i<clusterNum; i++){
     userClusterCenter.push(new makeUserClusterCenter());  // 生成
@@ -301,7 +289,6 @@ function onUp(e){
       userHistory.push(new makeUserHistory(i, Math.round(userClusterCenter[i].g*255), Math.round(userClusterCenter[i].b*255)));
     }
   }
-  userOprHistory.push(new makeUserOprHistory(colorPosData[selectedIndex].id, colorPosData[selectedIndex].x, colorPosData[selectedIndex].y, colorPosData[selectedIndex].g, colorPosData[selectedIndex].b));
   clusterMeanHistory.push(ColorInterface.calcClusterMean(interfaceArray));
   interfaceHistory.push($.extend(true, {}, interfaceArray[selectedIndex]))
   dragging = false;

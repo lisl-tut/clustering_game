@@ -12,43 +12,35 @@ function drawTrajectory(iter){
 
 //call once
 function setTrajectory(){
-    function copyColorPosData(argColorPosData){
-	  var colorPosDataTmp = [];
-      for(var i=0; i<argColorPosData.length; i++){
-        var cx = argColorPosData[i].x;
-        var cy = argColorPosData[i].y;
-        var cr = argColorPosData[i].r;
-        var cG = argColorPosData[i].g/255.0;// normG
-        var cB = argColorPosData[i].b/255.0;
-	    var cid = argColorPosData[i].id;
+  function copyColorPosData(argColorPosData){
+    var colorPosDataTmp = [];
+    console.log(argColorPosData.length)
+    for(var i=0; i<argColorPosData.length; i++){
+      var cx = argColorPosData[i].x;
+      var cy = argColorPosData[i].y;
+      var cr = argColorPosData[i].r;
+      var cG = argColorPosData[i].g;// normG
+      var cB = argColorPosData[i].b;
+      var cid = argColorPosData[i].id;
 	    console.log(cG + "," + cB + "sssss"); // undifined
-
-        colorPosDataTmp.push(new makeColorPosData(cx, cy, cr, cG, cB, cid));
-      }
+      colorPosDataTmp.push(new makeColorPosData(cx, cy, cr, cG, cB, cid));
+    }
 	  return colorPosDataTmp;
 	}
 
-   colorPosDataForTrajectory.push(copyColorPosData(initColorPosData));
+  colorPosDataForTrajectory.push(copyColorPosData(initialInterface));
 
-   var colorPosDataTmp = copyColorPosData(initColorPosData);
+  var colorPosDataTmp = copyColorPosData(initialInterface);
    
   //var colorPosDataTmp = colorPosData;
-  for(var i = 0; i < userOprHistory.length; i++){
+  for(let i = 0; i < interfaceHistory.length; i++){
+    var interface = interfaceHistory[i];
     for(var j = 0; j < colorPosDataTmp.length; j++){
-	
-      if(colorPosDataTmp[j].id == userOprHistory[i].id){
-	 // alert("ifbuaaaaaaaaaaaaaa");
-        colorPosDataTmp[j].x = userOprHistory[i].x;
-        colorPosDataTmp[j].y = userOprHistory[i].y;
-		//colorPosDataTmp[j].g = userOprHistory[i].g;
-        //colorPosDataTmp[j].b = userOprHistory[i].b;
-      }
+      if(colorPosDataTmp[j].id == interface.id){
+	      colorPosDataTmp[j].x = interface.x;
+        colorPosDataTmp[j].y = interface.y;
+	    }
     }
-	console.log(colorPosDataTmp[0].x+"xxx");
-
     colorPosDataForTrajectory.push(copyColorPosData(colorPosDataTmp));
-	
   }
-  //alert("leng"+colorPosDataForTrajectory.length);
-  //alert(colorPosDataForTrajectory[0].x);
 }
