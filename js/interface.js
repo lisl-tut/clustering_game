@@ -3,20 +3,27 @@ var canvas = $('#tutorial').get(0);
 var context = canvas.getContext('2d');
 
 var clusterNum = 4; // 左画面における識別のためのクラスタ数
-var userClusterCenter = []; // ユーザ操作により計算されるクラスタ中心
 var relX, relY;
 
 var dataArray; // データ点オブジェクトを格納
-var interfaceArray = [];
-var initialInterface;
-var interfaceHistory;
-var clusterMeanHistory;
+var interfaceArray = [];  // 左画面のインターフェースを構成する丸を格納
+var initialInterface;  // インターフェースの初期状態を格納
+var interfaceHistory;  // インターフェースの履歴を格納 
+var clusterMeanHistory;  // インターフェースのクラスタ中心を格納
 
 var radius = 30; //円の大きさ
 var fixedR = 66; //Rの値
 
 var dragging = false; //ドラッグ中かを示す変数
 var leftFlag;
+
+canvas.addEventListener('mousedown', onDown, false);
+canvas.addEventListener('mousemove', onMove, false);
+canvas.addEventListener('mouseup', onUp, false);
+
+repaint();
+turnCanvas(false);
+
 
 function turnCanvas(turnOn){
   if(turnOn){
@@ -28,100 +35,23 @@ function turnCanvas(turnOn){
   }
 }
 
-canvas.addEventListener('mousedown', onDown, false);
-canvas.addEventListener('mousemove', onMove, false);
-canvas.addEventListener('mouseup', onUp, false);
-
-repaint();
-turnCanvas(false);
-
-class Data{
-  constructor(id, g, b, label){
-    this.id = id;
-    this.label = label;
-    this.g = g;  // 0.0 ~ 1.0の範囲で与えられる
-    this.b = b;  //
-  }
-}
-
-// 左画面の分類操作用インターフェイス
-class ColorInterface{
-  //Dataインスタンス
-  constructor(data){
-    this.x = this.allocateInitialX();
-    this.y = this.allocateInitialY();
-    // int型 0~255
-    this.id = data.id;
-    this.label = this.allocateUserLabel();
-    this.r = fixedR;
-    this.g = data.g;
-    this.b = data.b;
-  }
-  getIntG(){
-    return Math.round(this.g*ColorInterface.COLOR_MAX);
-  }
-  getIntB(){
-    return Math.round(this.b*ColorInterface.COLOR_MAX);
-  }
-  // 左画面の円の表示場所をランダムにするための初期座標を決める
-  allocateInitialX(){
-    const xMax = canvas.width - radius;
-    const xMin = radius;
-    return Math.floor( Math.random() * (xMax + 1 - xMin) ) + xMin;
-  }
-  allocateInitialY(){
-    const yMax = canvas.height - radius;
-    const yMin = radius;
-    return Math.floor( Math.random() * (yMax + 1 - yMin) ) + yMin ;
-  }
-  // インターフェイス上の座標から適切なラベルを取得する
-  allocateUserLabel(){
-    if(this.x < canvas.width/2){
-      if(this.y < canvas.height/2){
-        return 0; // 左上
-      }else{
-        return 1; // 左下
-      }
-    }else{
-      if(this.y < canvas.height/2){
-        return 2; // 右上
-      }else{
-        return 3; // 右下
-      }
-    }
-  }
-}
-ColorInterface.COLOR_MAX = 255; //色データの範囲
-// クラスタ中心の計算
-ColorInterface.calcClusterMean = function(arr){
-  var result = {};
-  var cnt = {};
-  for (let i = 0; i < arr.length; i++) {   
-    const ele = arr[i];
-    if (ele.label in result) {
-      result[ele.label]["g"] += ele.getIntG();
-      result[ele.label]["b"] += ele.getIntB();
-      cnt[ele.label]++;
-    }else{
-      result[ele.label] = {};
-      result[ele.label]["g"] = ele.getIntG();
-      result[ele.label]["b"] = ele.getIntB();
-      cnt[ele.label] = 1;
-    }
-  }
-  for (const key in cnt) {
-    result[key]["g"] = Math.round(result[key]["g"] / cnt[key]);
-    result[key]["b"] = Math.round(result[key]["b"] / cnt[key]);
-  }
-  return result;
-}
-
 // canvas等の大きさを調整
 function adjustComponents(){
   $('#tutorial').attr('width', $('#div1').width()/2.1);
   $('#tutorial').attr('height', $('#div1').height());
   $('#tutorial2').attr('width', $('#div1').width()/2.1);
   $('#tutorial2').attr('height', $('#div1').height());
+}
+
+function findCircle(arr, x, y, r){
+  var res = null;
+  for (let i = 0; i < arr.length; i++) {
+    const ele = arr[i];
+    if(Math.sqrt(Math.pow(ele.x - x, 2) + Math.pow(ele.y - y, 2)) < r){
+      res = i;
+    }
+  }
+  return res;
 }
 
 // 決定ボタンを押したときに呼ばれる
@@ -146,33 +76,9 @@ function init() {
   clusterMeanHistory = [];
   clusterMeanHistory.push(ColorInterface.calcClusterMean(interfaceArray));
 
-  // データ点の配列を生成
-  var xMax = canvas.width - radius;
-  var xMin = radius;
-  var yMax = canvas.height - radius;
-  var yMin = radius;
-  for(var i=0; i<gbArray.length; i++){
-    var initX = Math.floor( Math.random() * (xMax + 1 - xMin) ) + xMin ;
-    var initY = Math.floor( Math.random() * (yMax + 1 - yMin) ) + xMin ;
-    interfaceArray[i].x = initX;
-    interfaceArray[i].y = initY;
-    var index = interfaceArray.length-1;
-    interfaceArray[i].label = interfaceArray[i].allocateUserLabel();
-  }
   initialInterface = $.extend(true, [], interfaceArray);
   repaint();
   leftFlag = true;
-}
-
-function findCircle(arr, x, y, r){
-  var res = null;
-  for (let i = 0; i < arr.length; i++) {
-    const ele = arr[i];
-    if(Math.sqrt(Math.pow(ele.x - x, 2) + Math.pow(ele.y - y, 2)) < r){
-      res = i;
-    }
-  }
-  return res;
 }
 
 function onDown(e) {
