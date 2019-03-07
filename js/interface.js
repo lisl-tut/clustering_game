@@ -4,7 +4,6 @@ var context = canvas.getContext('2d');
 
 var clusterNum = 4; // 左画面における識別のためのクラスタ数
 var userClusterCenter = []; // ユーザ操作により計算されるクラスタ中心
-var userHistory = []; // ユーザ操作によるクラスタ中心の移動履歴
 var relX, relY;
 
 var dataArray; // データ点オブジェクトを格納
@@ -117,23 +116,6 @@ ColorInterface.calcClusterMean = function(arr){
   return result;
 }
 
-function makeUserClusterCenter(){
-  this.g = null;
-  this.b = null;
-}
-
-function makeUserHistory(id, g, b){
-  this.id = id; // クラスタラベル
-  this.g = g;
-  this.b = b;
-}
-
-// 変数のリセット
-function resetVariables(){
-  if(userClusterCenter.length > 0){userClusterCenter = [];}
-  if(userHistory.length > 0){userHistory = [];}
-}
-
 // canvas等の大きさを調整
 function adjustComponents(){
   $('#tutorial').attr('width', $('#div1').width()/2.1);
@@ -142,34 +124,9 @@ function adjustComponents(){
   $('#tutorial2').attr('height', $('#div1').height());
 }
 
-function userCalcClusterCenter(changeCL){
-  // クラスタ中心の計算
-  // クラスタ中心の履歴を記録
-  var sumG = 0;
-  var sumB = 0;
-  var count = 0;
-  for(var i=0; i<interfaceArray.length; i++){
-    if(interfaceArray[i].label === changeCL){
-      sumG += interfaceArray[i].g;
-      sumB += interfaceArray[i].b;
-      count++;
-    }
-  }
-  if(count === 0){
-    userClusterCenter[changeCL].g = null;
-    userClusterCenter[changeCL].b = null;
-  }else{
-    //console.log("count:"+count+", "+sumG+","+sumG/count);
-    userClusterCenter[changeCL].g = sumG/count;
-    userClusterCenter[changeCL].b = sumB/count;
-  }
-}
-
-
 // 決定ボタンを押したときに呼ばれる
 function init() {
 
-  resetVariables();  //決定ボタンを二回押したときの対策処理
   adjustComponents();  //コンポーネントの大きさを設定する
   turnCanvas(true);  //canvasを可視状態にする
 
@@ -203,17 +160,6 @@ function init() {
     interfaceArray[i].label = interfaceArray[i].allocateUserLabel();
   }
   initialInterface = $.extend(true, [], interfaceArray);
-  // ユーザ操作によるクラスタ中心を生成
-  for(var i=0; i<clusterNum; i++){
-    userClusterCenter.push(new makeUserClusterCenter());  // 生成
-    userCalcClusterCenter(i);
-    // 初期クラスタを保存
-    if(userClusterCenter[i].g === null && userClusterCenter[i].b === null){ 
-      userHistory.push(new makeUserHistory(i, null, null));
-    }else{
-      userHistory.push(new makeUserHistory(i, Math.round(userClusterCenter[i].g*255), Math.round(userClusterCenter[i].b*255)));
-    }
-  }
   repaint();
   leftFlag = true;
 }
@@ -260,20 +206,9 @@ function onUp(e){
   //動かしたものは配列の後ろにある
   var selectedIndex = interfaceArray.length - 1;
   interfaceArray[selectedIndex].label = interfaceArray[selectedIndex].allocateUserLabel();
-  // 現在のクラスタ中心をすべて保存
-  for(var i=0; i<userClusterCenter.length; i++){
-      userCalcClusterCenter(i);
-      if(userClusterCenter[i].g === null && userClusterCenter[i].b === null){ 
-      userHistory.push(new makeUserHistory(i, null, null));
-    }else{
-      userHistory.push(new makeUserHistory(i, Math.round(userClusterCenter[i].g*255), Math.round(userClusterCenter[i].b*255)));
-    }
-  }
   clusterMeanHistory.push(ColorInterface.calcClusterMean(interfaceArray));
   interfaceHistory.push($.extend(true, {}, interfaceArray[selectedIndex]))
   dragging = false;
-  console.log(clusterMeanHistory)
-  console.log(userHistory)
 }
 
 // 軸を描画する

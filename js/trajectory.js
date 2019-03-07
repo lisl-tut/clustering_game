@@ -10,8 +10,22 @@ function drawTrajectory(iter){
   }
 }
 
+function makeColorPosData(x, y, r, normG, normB, i){
+  this.x = x; // 左画面においてのx座標
+  this.y = y; // 左画面においてのy座標
+  this.normG = normG; // 元データ（正規化されている）
+  this.normB = normB; // 元データ（正規化されている）
+  this.r = r; // 赤：とりあえず固定
+  this.g = Math.round(this.normG*255); // 色データへ変換
+  this.b = Math.round(this.normB*255); // 色データへ変換
+  this.clusterLabel; // ユーザが設定する所属クラスタへのラベル
+  this.id = i;  // データの通し番号（解答時のアニメーションに使用）
+}
+
+
 //call once
 function setTrajectory(){
+
   function copyColorPosData(argColorPosData){
     var colorPosDataTmp = [];
     console.log(argColorPosData.length)

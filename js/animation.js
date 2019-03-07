@@ -127,7 +127,7 @@ function playAnime(){
     rContext.stroke();
   }
   setTrajectory();
-  var loopNum = userHistory.length / 4;
+  var loopNum = clusterMeanHistory.length;
   if(loopNum < resMap["iters"]){
     loopNum = resMap["iters"];
   }
@@ -152,7 +152,7 @@ function playAnime(){
 	// 右画面クラスタ中心描画
 	plotClusterCenter(t);
 
-    plotClusterCenterHistory(userHistory, i, 0); //userのクラスタ中心の履歴の描画
+    plotClusterCenterHistory(clusterMeanHistory, i, 0); //userのクラスタ中心の履歴の描画
 	
 	drawAxes();
 	// 左画面描画
@@ -272,10 +272,17 @@ numに3を指定したときは0回目と1回目と2回目と3回目のクラス
 */
   function plotClusterCenterHistory(dotHistory, num, marker){
     var i, n;
-    if(num > (dotHistory.length - 4)/4) num = (dotHistory.length - 4)/4; //表示回数がデータの表示できる回数分より大きかった場合はそこで打ち切る
+    if(num > dotHistory.length - 1){
+      num = dotHistory.length - 1; //表示回数がデータの表示できる回数分より大きかった場合はそこで打ち切る
+    }
     /*データの表示*/
-    for(j = num*4; j < num*4 + 4; j++){
-        plotDot(userHistory[j]['g'], userHistory[j]['b'], marker, userHistory[j]['id']);
+    for(j = num; j < num + 1; j++){
+      const element = clusterMeanHistory[j];
+      for (const key in element) {
+          plotDot(element[key].g,
+                  element[key].b,
+                  marker, key);
+      }
     }
   }
 
