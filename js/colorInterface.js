@@ -31,25 +31,25 @@ class ColorInterface{
   }
   // 左画面の円の表示場所をランダムにするための初期座標を決める
   allocateInitialX(){
-    const xMax = canvas.width - radius;
+    const xMax = lCanvas.width - radius;
     const xMin = radius;
     return Math.floor( Math.random() * (xMax + 1 - xMin) ) + xMin;
   }
   allocateInitialY(){
-    const yMax = canvas.height - radius;
+    const yMax = lCanvas.height - radius;
     const yMin = radius;
     return Math.floor( Math.random() * (yMax + 1 - yMin) ) + yMin ;
   }
   // インターフェイス上の座標から適切なラベルを取得する
   allocateUserLabel(){
-    if(this.x < canvas.width/2){
-      if(this.y < canvas.height/2){
+    if(this.x < lCanvas.width/2){
+      if(this.y < lCanvas.height/2){
         return 0; // 左上
       }else{
         return 1; // 左下
       }
     }else{
-      if(this.y < canvas.height/2){
+      if(this.y < lCanvas.height/2){
         return 2; // 右上
       }else{
         return 3; // 右下

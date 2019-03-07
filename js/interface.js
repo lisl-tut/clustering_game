@@ -1,6 +1,6 @@
 // スクリプト読み込み時に実行される
-var canvas = $('#tutorial').get(0);
-var context = canvas.getContext('2d');
+var lCanvas = $('#tutorial').get(0);
+var context = lCanvas.getContext('2d');
 
 var clusterNum = 4; // 左画面における識別のためのクラスタ数
 var relX, relY;
@@ -17,9 +17,9 @@ var fixedR = 66; //Rの値
 var dragging = false; //ドラッグ中かを示す変数
 var leftFlag;
 
-canvas.addEventListener('mousedown', onDown, false);
-canvas.addEventListener('mousemove', onMove, false);
-canvas.addEventListener('mouseup', onUp, false);
+lCanvas.addEventListener('mousedown', onDown, false);
+lCanvas.addEventListener('mousemove', onMove, false);
+lCanvas.addEventListener('mouseup', onUp, false);
 
 repaint();
 turnCanvas(false);
@@ -83,8 +83,8 @@ function init() {
 
 function onDown(e) {
   // クリックされた位置の相対座標を取得
-  var x = e.clientX - canvas.getBoundingClientRect().left;
-  var y = e.clientY - canvas.getBoundingClientRect().top;
+  var x = e.clientX - lCanvas.getBoundingClientRect().left;
+  var y = e.clientY - lCanvas.getBoundingClientRect().top;
   // 選択されたオブジェクトの要素番号を取得
   var selectedIndex = findCircle(interfaceArray, x, y, radius);
   dragging = selectedIndex !== null;
@@ -99,8 +99,8 @@ function onDown(e) {
 function onMove(e){
   // 動かしている最中は動かしているものが配列の後ろに来るず
   var selectedIndex = interfaceArray.length - 1;
-  var x = e.clientX - canvas.getBoundingClientRect().left;
-  var y = e.clientY - canvas.getBoundingClientRect().top;
+  var x = e.clientX - lCanvas.getBoundingClientRect().left;
+  var y = e.clientY - lCanvas.getBoundingClientRect().top;
   if (!dragging) return;
   interfaceArray[selectedIndex].x = x + relX;
   interfaceArray[selectedIndex].y = y + relY;
@@ -122,13 +122,13 @@ function drawAxes(){
   context.strokeStyle = 'rgba(0, 0, 0,1)';
   // 横軸
   context.beginPath();
-  context.moveTo(0, canvas.height/2);
-  context.lineTo(canvas.width, canvas.height/2);
+  context.moveTo(0, lCanvas.height/2);
+  context.lineTo(lCanvas.width, lCanvas.height/2);
   context.stroke();
   // 縦軸
   context.beginPath();
-  context.moveTo(canvas.width/2, 0);
-  context.lineTo(canvas.width/2, canvas.height);
+  context.moveTo(lCanvas.width/2, 0);
+  context.lineTo(lCanvas.width/2, lCanvas.height);
   context.stroke();
 }
 
@@ -150,7 +150,7 @@ function drawCircle(obj){
 }
   
 function repaint(){
-  context.clearRect(0, 0, canvas.width, canvas.height);
+  context.clearRect(0, 0, lCanvas.width, lCanvas.height);
   drawAxes();
   for(var i=0; i<interfaceArray.length; i++){
     drawCircle(interfaceArray[i]);

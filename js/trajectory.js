@@ -51,9 +51,9 @@ function setTrajectory(){
     var interface = interfaceHistory[i];
     for(var j = 0; j < colorPosDataTmp.length; j++){
       if(colorPosDataTmp[j].id == interface.id){
-	      colorPosDataTmp[j].x = interface.x;
+        colorPosDataTmp[j].x = interface.x;
         colorPosDataTmp[j].y = interface.y;
-	    }
+      }
     }
     colorPosDataForTrajectory.push(copyColorPosData(colorPosDataTmp));
   }
