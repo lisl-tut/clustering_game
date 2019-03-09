@@ -1,7 +1,3 @@
-// 共有変数
-var data_json_str; // 色データを保存しておくための変数
-var learn_json_str; // 学習結果データを保存しておくための変数
-
 // フォームからゲームルールを取得してURLのパラメータの文字列を返す
 function makeReqParams(){
   var form = document.settei;  //フォーム
@@ -46,6 +42,5 @@ function getData(){
 
 // 答え合わせボタンを押したときに呼ばれる関数
 function getLearn(){
-    learn_json_str = get('Learn');
-    playAnime();
+  return get('Learn');
 }

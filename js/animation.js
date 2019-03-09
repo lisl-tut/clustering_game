@@ -2,13 +2,13 @@ var rCanvas = $('#tutorial2').get(0);
 var rContext = rCanvas.getContext('2d');
 
 function playAnime(){
-  // 左画面にオブジェクトが表示されているかチェック
+
   if(typeof leftFlag === "undefined" || leftFlag === false){
-    console.log("左画面にオブジェクトがない");
+    alert("答え合わせボタンを押す前に決定ボタンを押してください");
     return;
   }
 
-  var resMap = JSON.parse(learn_json_str);
+  var resMap = JSON.parse(getLearn());
   if(resMap["success"] !== true){console.log("受信失敗");return;}
 
   var dataPoint = [];
