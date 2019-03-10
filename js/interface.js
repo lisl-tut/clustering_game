@@ -10,6 +10,9 @@ var initialInterface;  // インターフェースの初期状態を格納
 var interfaceHistory;  // インターフェースの履歴を格納 
 var clusterMeanHistory;  // インターフェースのクラスタ中心を格納
 
+var resMap;
+var dataPoint;
+
 var dragging = false; //ドラッグ中かを示す変数
 var leftFlag;
 

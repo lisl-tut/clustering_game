@@ -20,7 +20,7 @@ function convRgbToPos(obj, colorG, colorB){
 
 // interfaceArrayを入れると、dataPointを生成する
 function getCoordinatesAtRightPanel(arr){
-  var dataPoint = [];
+  dataPoint = [];
   for(let i = 0; i < arr.length; i++){
     dataPoint.push({
       x: arr[i].g*(rCanvas.width*0.8) + rCanvas.width*0.1,
@@ -33,6 +33,7 @@ function getCoordinatesAtRightPanel(arr){
   return dataPoint;
 }
 
+// 軌跡データを左画面に描画
 function drawTrajectory(traArray, iter){
   var iterIndex = traArray.length <= iter ? traArray.length-1 : iter;
   for(let key in traArray[iterIndex]){
@@ -40,6 +41,8 @@ function drawTrajectory(traArray, iter){
   }
 }
 
+// 軌跡データの作成
+// initialIntefaceを外から参照しているので注意
 function getTrajectory(){
   var ifTrajectory = [];
   colorPosDataTmp = ColorInterface.copyArray(initialInterface);  // interfaceHistory(差分)から現在の状況を作成する
@@ -58,6 +61,62 @@ function getTrajectory(){
   return ifTrajectory;
 }
 
+/*
+軸を表示する関数
+軸には目盛りは振っていませんが，0から255とだけ描画されるようにしてあります．
+*/
+function drawRightAxis(){
+  rContext.beginPath();
+  rContext.strokeStyle = 'rgb(0, 0, 0)';
+  rContext.moveTo(rCanvas.width*0.1, rCanvas.height*0.9);
+  rContext.lineTo(rCanvas.width*0.1, rCanvas.height*0.1);
+  rContext.stroke();
+  rContext.moveTo(rCanvas.width*0.1, rCanvas.height*0.9);
+  rContext.lineTo(rCanvas.width*0.9, rCanvas.height*0.9);
+  rContext.stroke();
+  rContext.fillStyle = 'rgb(0, 0, 0)';
+  rContext.fillText('0', rCanvas.width*0.1-10, rCanvas.height*0.9);
+  rContext.fillText('255', rCanvas.width*0.1-20, rCanvas.height*0.11);
+  rContext.fillText('0', rCanvas.width*0.1, rCanvas.height*0.9+10);
+  rContext.fillText('255', rCanvas.width*0.9-10, rCanvas.height*0.9+10);
+}
+
+// データポイントのプロット関数
+function plotDataPoint(t){
+  var resultIndex = t - 1;
+  // ユーザーの動かした回数がクラスタリングのイテレーションよりも多い場合はそれに合わせる
+  if(resultIndex >= resMap["iters"]){
+    resultIndex = resMap["iters"] - 1;
+  }
+  if(resultIndex === -1){
+    for(var i=0; i<dataPoint.length; i++){
+      drawRightPCircle(dataPoint[i].x, dataPoint[i].y, dataPoint[i].g, dataPoint[i].b);
+    }
+  }else{
+    for(var i=0; i<dataPoint.length; i++){
+      var clusterLabel = resMap["result"][resultIndex]["allocation"][dataPoint[i].id]
+      var g = Math.round(resMap["result"][resultIndex]["centroid"][clusterLabel]["x"] * 255);
+      var b = Math.round(resMap["result"][resultIndex]["centroid"][clusterLabel]["y"] * 255);
+      drawRightPCircle(dataPoint[i].x, dataPoint[i].y, g, b);
+    }
+  }
+}
+
+// データアイコン
+function drawRightPCircle(x, y, colorG, colorB, roundColorG, roundColorB){
+  // 円を塗りつぶす
+  rContext.fillStyle = 'rgba('+fixedR+','+colorG+','+colorB+',1)';
+  rContext.beginPath();
+  rContext.arc(x, y, rightRadius, 0, Math.PI*2, false);
+  rContext.fill();
+
+  // 円の縁取り
+  rContext.lineWidth = 1;
+  rContext.strokeStyle = 'rgba(128,'+ roundColorG +','+ roundColorB+',1)';
+  rContext.beginPath();
+  rContext.arc(x, y, rightRadius, 0, Math.PI*2, false);
+  rContext.stroke();
+}
 
 function playAnime(){
 
@@ -65,7 +124,7 @@ function playAnime(){
     alert("答え合わせボタンを押す前に決定ボタンを押してください");
     return;
   }
-  var resMap = JSON.parse(getLearn());
+  resMap = JSON.parse(getLearn());
   if(!resMap["success"]){
     alert("データ受信エラー");
     return;
@@ -73,29 +132,6 @@ function playAnime(){
   // 右画面描画用の配列を作成
   var dataPoint = getCoordinatesAtRightPanel(initialInterface);
 
-  // データポイントのプロット関数
-  function plotDataPoint(t){
-    var resultIndex = t - 1;
-    // ユーザーの動かした回数がクラスタリングのイテレーションよりも多い場合はそれに合わせる
-    if(resultIndex >= resMap["iters"]){
-      resultIndex = resMap["iters"] - 1;
-    }
-    if(resultIndex === -1){
-      for(var i=0; i<dataPoint.length; i++){
-        var g = Math.round(dataPoint[i].g);
-        var b = Math.round(dataPoint[i].b);
-        drawRightPCircle(dataPoint[i].x, dataPoint[i].y, g, b);
-      }
-    }else{
-      for(var i=0; i<dataPoint.length; i++){
-        //var clusterLabel = returnClusterLabel(resMap["result"][resultIndex]["allocation"][dataPoint[i].id]);
-        var clusterLabel = resMap["result"][resultIndex]["allocation"][dataPoint[i].id]
-        var g = Math.round(resMap["result"][resultIndex]["centroid"][clusterLabel]["x"] * 255);
-        var b = Math.round(resMap["result"][resultIndex]["centroid"][clusterLabel]["y"] * 255);
-        drawRightPCircle(dataPoint[i].x, dataPoint[i].y, g, b);
-      }
-    }
-  }
   function plotClusterCenter(t){
     if(t == 0){return;}
     var resultIndex = t - 1;
@@ -112,21 +148,6 @@ function playAnime(){
       convRgbToPos(centroid[i], g, b);
       drawRightCCircle(centroid[i].x, centroid[i].y, centroid[i].g, centroid[i].b);
     }
-  }
-  // データアイコン
-  function drawRightPCircle(x, y, colorG, colorB, roundColorG, roundColorB){
-    // 円を塗りつぶす
-    rContext.fillStyle = 'rgba('+fixedR+','+colorG+','+colorB+',1)';
-    rContext.beginPath();
-    rContext.arc(x, y, rightRadius, 0, Math.PI*2, false);
-    rContext.fill();
-
-    // 円の縁取り
-	  rContext.lineWidth = 1;
-    rContext.strokeStyle = 'rgba(128,'+ roundColorG +','+ roundColorB+',1)';
-    rContext.beginPath();
-    rContext.arc(x, y, rightRadius, 0, Math.PI*2, false);
-    rContext.stroke();
   }
   // クラスタアイコン
   function drawRightCCircle(x, y, colorG, colorB, roundColorG, roundColorB){
@@ -253,26 +274,6 @@ colorは0から5までの数字を選んでください(0:シアン, 1:マゼン
         rContext.fillStyle = color;
         rContext.fillRect(x-size/2, y-size/2, size, size);
     }
-  }
-
-/*
-軸を表示する関数
-軸には目盛りは振っていませんが，0から255とだけ描画されるようにしてあります．
-*/
-  function drawRightAxis(){
-    rContext.beginPath();
-    rContext.strokeStyle = 'rgb(0, 0, 0)';
-    rContext.moveTo(rCanvas.width*0.1, rCanvas.height*0.9);
-    rContext.lineTo(rCanvas.width*0.1, rCanvas.height*0.1);
-    rContext.stroke();
-    rContext.moveTo(rCanvas.width*0.1, rCanvas.height*0.9);
-    rContext.lineTo(rCanvas.width*0.9, rCanvas.height*0.9);
-    rContext.stroke();
-    rContext.fillStyle = 'rgb(0, 0, 0)';
-    rContext.fillText('0', rCanvas.width*0.1-10, rCanvas.height*0.9);
-    rContext.fillText('255', rCanvas.width*0.1-20, rCanvas.height*0.11);
-    rContext.fillText('0', rCanvas.width*0.1, rCanvas.height*0.9+10);
-    rContext.fillText('255', rCanvas.width*0.9-10, rCanvas.height*0.9+10);
   }
 
   /*
