@@ -1,25 +1,19 @@
-// データの格納
-class Data{
-  constructor(id, g, b, label){
-    this.id = id;
-    this.label = label;
-    this.g = g;  // 0.0 ~ 1.0の範囲で与えられる
-    this.b = b;  //
-  }
-}
+var rightRadius = 15; //右グラフの円の大きさ
+var radius = 30; //円の大きさ
+var fixedR = 66; //Redの値
 
 // 左画面の分類操作用インターフェイス
 class ColorInterface{
   //Dataインスタンス
-  constructor(data){
-    this.x = this.allocateInitialX();
-    this.y = this.allocateInitialY();
+  constructor(x, y, id, label, r, g, b){
+    this.x = x;
+    this.y = y;
     // int型 0~255
-    this.id = data.id;
-    this.label = this.allocateUserLabel();
-    this.r = fixedR;
-    this.g = data.g;
-    this.b = data.b;
+    this.id = id;
+    this.label = label;
+    this.r = r;
+    this.g = g;
+    this.b = b;
   }
   // GreenのInt値を取得
   getIntG(){
@@ -28,17 +22,6 @@ class ColorInterface{
   // BlueのInt値を取得
   getIntB(){
     return Math.round(this.b*ColorInterface.COLOR_MAX);
-  }
-  // 左画面の円の表示場所をランダムにするための初期座標を決める
-  allocateInitialX(){
-    const xMax = lCanvas.width - radius;
-    const xMin = radius;
-    return Math.floor( Math.random() * (xMax + 1 - xMin) ) + xMin;
-  }
-  allocateInitialY(){
-    const yMax = lCanvas.height - radius;
-    const yMin = radius;
-    return Math.floor( Math.random() * (yMax + 1 - yMin) ) + yMin ;
   }
   // インターフェイス上の座標から適切なラベルを取得する
   allocateUserLabel(){
@@ -58,6 +41,36 @@ class ColorInterface{
   }
 }
 ColorInterface.COLOR_MAX = 255; //色データの範囲
+// このオブジェクトがある配列をコピーする
+ColorInterface.copyArray = function(oldArr){
+  var newArr = [];
+  for (let i = 0; i < oldArr.length; i++) {
+    const ele = oldArr[i];
+    var obj = new ColorInterface(ele.x, ele.y, ele.id, ele.label,
+        ele.r, ele.g, ele.b);
+    newArr.push(obj);
+  }
+  return newArr;
+}
+ColorInterface.create = function(id, r, g, b){
+  var obj = new ColorInterface(null, null, id, null, r, g, b);
+  obj.x = ColorInterface.allocateInitialX();
+  obj.y = ColorInterface.allocateInitialY();
+  obj.label = obj.allocateUserLabel();
+  return obj;
+}
+// ランダムにxの値を返す
+ColorInterface.allocateInitialX = function(){
+  const xMax = lCanvas.width - radius;
+  const xMin = radius;
+  return Math.floor( Math.random() * (xMax + 1 - xMin) ) + xMin;
+}
+// ランダムにyの値を返す
+ColorInterface.allocateInitialY = function(){
+  const yMax = lCanvas.height - radius;
+  const yMin = radius;
+  return Math.floor( Math.random() * (yMax + 1 - yMin) ) + yMin ;
+}
 // クラスタ中心の計算
 ColorInterface.calcClusterMean = function(arr){
   var result = {};

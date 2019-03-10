@@ -1,62 +1,85 @@
 var rCanvas = $('#tutorial2').get(0);
 var rContext = rCanvas.getContext('2d');
 
+function makeDataPos(x, y, g, b, id){
+  this.x = x;
+  this.y = y;
+  this.g = g;
+  this.b = b;
+  this.id = id;
+}
+
+// データ点をすべてRGBから画面上の位置へ変換
+function convRgbToPos(obj, colorG, colorB){
+  obj.x = colorG * 255;
+  obj.y = colorB * 255;
+  obj.x = obj.x*((rCanvas.width*0.8)/255) + (rCanvas.width*0.1);
+  obj.y = obj.y*((rCanvas.height*0.8)/255) + (rCanvas.height*0.1);
+  obj.y = rCanvas.height - obj.y; //上下反転変換
+}
+
+// interfaceArrayを入れると、dataPointを生成する
+function getCoordinatesAtRightPanel(arr){
+  var dataPoint = [];
+  for(let i = 0; i < arr.length; i++){
+    dataPoint.push({
+      x: arr[i].g*(rCanvas.width*0.8) + rCanvas.width*0.1,
+      y: rCanvas.height*0.9 - arr[i].b*(rCanvas.height*0.8),
+      g: arr[i].getIntG(),
+      b: arr[i].getIntB(),
+      id: arr[i].id,
+    });
+  }
+  return dataPoint;
+}
+
+function drawTrajectory(traArray, iter){
+  var iterIndex = traArray.length <= iter ? traArray.length-1 : iter;
+  for(let key in traArray[iterIndex]){
+    drawCircle(traArray[iterIndex][key]);
+  }
+}
+
+function getTrajectory(){
+  var ifTrajectory = [];
+  colorPosDataTmp = ColorInterface.copyArray(initialInterface);  // interfaceHistory(差分)から現在の状況を作成する
+  ifTrajectory.push(ColorInterface.copyArray(initialInterface));
+  for(let i = 0; i < interfaceHistory.length; i++){
+    var interface = interfaceHistory[i];
+    for(let key in colorPosDataTmp){
+      if(colorPosDataTmp[key].id == interface.id){
+        colorPosDataTmp[key].x = interface.x;
+        colorPosDataTmp[key].y = interface.y;
+        break;
+      }
+    }
+    ifTrajectory.push(ColorInterface.copyArray(colorPosDataTmp));
+  }
+  return ifTrajectory;
+}
+
+
 function playAnime(){
 
   if(typeof leftFlag === "undefined" || leftFlag === false){
     alert("答え合わせボタンを押す前に決定ボタンを押してください");
     return;
   }
-
   var resMap = JSON.parse(getLearn());
-  if(resMap["success"] !== true){console.log("受信失敗");return;}
+  if(!resMap["success"]){
+    alert("データ受信エラー");
+    return;
+  }
+  // 右画面描画用の配列を作成
+  var dataPoint = getCoordinatesAtRightPanel(initialInterface);
 
-  var dataPoint = [];
-  function makeDataPos(x, y, g, b, id){
-    this.x = x;
-    this.y = y;
-    this.g = g;
-    this.b = b;
-    this.id = id;
-  }
-  // 右画面におけるデータの位置座標とクラスタへの参照ラベルを取得
-  for(var i=0; i<initialInterface.length; i++){
-    var data = initialInterface[i];
-    dataPoint.push(new makeDataPos(data.g, data.b, data.g*255, data.b*255, data.id));
-	  convRgbToPos(dataPoint[i], dataPoint[i].x, dataPoint[i].y);
-  }
-  // データ点をすべてRGBから画面上の位置へ変換
-  function convRgbToPos(obj, colorG, colorB){
- 	  obj.x = colorG * 255;
-    obj.y = colorB * 255;
-	  obj.x = obj.x*((rCanvas.width*0.8)/255) + (rCanvas.width*0.1);
-    obj.y = obj.y*((rCanvas.height*0.8)/255) + (rCanvas.height*0.1);
-    obj.y = rCanvas.height - obj.y; //上下反転変換
-  }
-
-  // 描画
-  var t = 0;
-  var count = 0;
-  var rightRadius = 15;
   // データポイントのプロット関数
   function plotDataPoint(t){
-    var resultIndex = t-1;
+    var resultIndex = t - 1;
+    // ユーザーの動かした回数がクラスタリングのイテレーションよりも多い場合はそれに合わせる
     if(resultIndex >= resMap["iters"]){
-      resultIndex = resMap["iters"]-1;
+      resultIndex = resMap["iters"] - 1;
     }
-
-    function returnClusterLabel(label){
-      var no;
-      var index;
-      for(var i=0; i<resMap["result"][resultIndex]["labels"].length; i++){
-        no = resMap["result"][resultIndex]["labels"][i];
-        if(no === label){
-          index = i;
-          break;
-        }
-	    }
-	    return index;
-	  }
     if(resultIndex === -1){
       for(var i=0; i<dataPoint.length; i++){
         var g = Math.round(dataPoint[i].g);
@@ -65,7 +88,8 @@ function playAnime(){
       }
     }else{
       for(var i=0; i<dataPoint.length; i++){
-        var clusterLabel = returnClusterLabel(resMap["result"][resultIndex]["allocation"][dataPoint[i].id]);
+        //var clusterLabel = returnClusterLabel(resMap["result"][resultIndex]["allocation"][dataPoint[i].id]);
+        var clusterLabel = resMap["result"][resultIndex]["allocation"][dataPoint[i].id]
         var g = Math.round(resMap["result"][resultIndex]["centroid"][clusterLabel]["x"] * 255);
         var b = Math.round(resMap["result"][resultIndex]["centroid"][clusterLabel]["y"] * 255);
         drawRightPCircle(dataPoint[i].x, dataPoint[i].y, g, b);
@@ -126,35 +150,33 @@ function playAnime(){
     rContext.arc(x, y, rightRadius, 0, Math.PI*2, false);
     rContext.stroke();
   }
-  setTrajectory();
+
+  // 描画
+  var t = 0;
+
   var loopNum = clusterMeanHistory.length;
   if(loopNum < resMap["iters"]){
     loopNum = resMap["iters"];
   }
-  loop(0, loopNum);
 
   /* ======== ここからmain ======== */
   //loop(0, hoge); //ループ処理(0から開始してhogeまで)
+  loop(0, loopNum);
 
   /* ここにloop関数でループさせる内容を書いてください． */
   function loopContent(i){
     context.clearRect(0, 0, lCanvas.width, lCanvas.height);
     rContext.clearRect(0, 0, rCanvas.width, rCanvas.height);
-    drawAxis(); //軸を表示
-
-    // 右画面データ点描画
-    plotDataPoint(t);
-    // 右画面クラスタ中心描画
-    plotClusterCenter(t);
-
-    plotClusterCenterHistory(clusterMeanHistory, i, 0); //userのクラスタ中心の履歴の描画
-    
-    drawAxes();
+    // 軸の描画
+    drawLeftAxis();
+    drawRightAxis();
     // 左画面描画
-    drawTrajectory(t);
+    drawTrajectory(getTrajectory(), t);
+    // 右画面描画
+    plotDataPoint(t); // データ点
+    plotClusterCenter(t); // クラスタ中心
+    plotClusterCenterHistory(clusterMeanHistory, i, 0); // ユーザーのクラスタ中心
     t++;
-    i=t;
-
   }
 
 /* ======== mainここまで ======== */
@@ -233,13 +255,11 @@ colorは0から5までの数字を選んでください(0:シアン, 1:マゼン
     }
   }
 
-
-
 /*
 軸を表示する関数
 軸には目盛りは振っていませんが，0から255とだけ描画されるようにしてあります．
 */
-  function drawAxis(){
+  function drawRightAxis(){
     rContext.beginPath();
     rContext.strokeStyle = 'rgb(0, 0, 0)';
     rContext.moveTo(rCanvas.width*0.1, rCanvas.height*0.9);
@@ -254,8 +274,6 @@ colorは0から5までの数字を選んでください(0:シアン, 1:マゼン
     rContext.fillText('0', rCanvas.width*0.1, rCanvas.height*0.9+10);
     rContext.fillText('255', rCanvas.width*0.9-10, rCanvas.height*0.9+10);
   }
-
-
 
   /*
   numに指定した回数分のクラスタ中心の履歴をplotする関数
@@ -281,8 +299,6 @@ colorは0から5までの数字を選んでください(0:シアン, 1:マゼン
     }
   }
 
-
-
   /*
   ループ関数, 1000ms毎にloopContentの処理を行う．
   iは繰り返しのカウンターの初期値
@@ -295,7 +311,6 @@ colorは0から5までの数字を選んでください(0:シアン, 1:マゼン
   */
   function loop(i, endCount){
     if(i <= endCount){
-        //console.log('counter:' + i)
       loopContent(i);
       setTimeout(function(){loop(++i, endCount)}, 500);
     }

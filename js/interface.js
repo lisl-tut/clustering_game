@@ -5,14 +5,10 @@ var context = lCanvas.getContext('2d');
 var clusterNum = 4; // 左画面における識別のためのクラスタ数
 var relX, relY;
 
-var dataArray; // データ点オブジェクトを格納
-var interfaceArray = [];  // 左画面のインターフェースを構成する丸を格納
+var interfaceArray;  // 左画面のインターフェースを構成する丸を格納
 var initialInterface;  // インターフェースの初期状態を格納
 var interfaceHistory;  // インターフェースの履歴を格納 
 var clusterMeanHistory;  // インターフェースのクラスタ中心を格納
-
-var radius = 30; //円の大きさ
-var fixedR = 66; //Rの値
 
 var dragging = false; //ドラッグ中かを示す変数
 var leftFlag;
@@ -62,21 +58,15 @@ function init() {
 
   // サーバーから送られてきたデータをパースする
   var gbArray = JSON.parse(getData());
-  dataArray = [];
-  for (let i = 0; i < gbArray.length; i++) {
-    const gb = gbArray[i];
-    dataArray.push(new Data(i, gb["point"][0], gb["point"][1], gb["cluster"]));
-  }
-  // インターフェイス用のインスタンス作成
   interfaceArray = [];
   for (let i = 0; i < gbArray.length; i++) {
-    interfaceArray.push(new ColorInterface(dataArray[i]));
+    const gb = gbArray[i];
+    interfaceArray.push(ColorInterface.create(i, fixedR, gb.point[0], gb.point[1]));
   }
   interfaceHistory = [];
   clusterMeanHistory = [];
   clusterMeanHistory.push(ColorInterface.calcClusterMean(interfaceArray));
-
-  initialInterface = $.extend(true, [], interfaceArray);
+  initialInterface = ColorInterface.copyArray(interfaceArray);
   repaint();
   leftFlag = true;
 }
@@ -92,7 +82,7 @@ function onDown(e) {
   relX = interfaceArray[selectedIndex].x - x;
   relY = interfaceArray[selectedIndex].y - y;
   //表示の関係で選択したものが一番最後に来るようにする。
-  interfaceArray.push(interfaceArray[selectedIndex]);
+  interfaceArray.push(ColorInterface.copyArray(interfaceArray)[selectedIndex]);
   interfaceArray.splice(selectedIndex, 1);
 }
 
@@ -113,12 +103,12 @@ function onUp(e){
   var selectedIndex = interfaceArray.length - 1;
   interfaceArray[selectedIndex].label = interfaceArray[selectedIndex].allocateUserLabel();
   clusterMeanHistory.push(ColorInterface.calcClusterMean(interfaceArray));
-  interfaceHistory.push($.extend(true, {}, interfaceArray[selectedIndex]))
+  interfaceHistory.push(ColorInterface.copyArray(interfaceArray)[selectedIndex])
   dragging = false;
 }
 
 // 軸を描画する
-function drawAxes(){
+function drawLeftAxis(){
   context.strokeStyle = 'rgba(0, 0, 0,1)';
   // 横軸
   context.beginPath();
@@ -137,7 +127,7 @@ function drawCircle(obj){
   if("getIntG" in obj){
     context.fillStyle = 'rgba('+obj.r+','+obj.getIntG()+','+obj.getIntB()+',1)';
   }else{
-    context.fillStyle = 'rgba('+obj.r+','+obj.g+','+obj.b+',1)';
+    context.fillStyle = 'rgba('+obj.r+','+Math.round(obj.g*255)+','+Math.round(obj.b*255)+',1)';
   }
   context.beginPath();
   context.arc(obj.x, obj.y, radius, 0, Math.PI*2, false);
@@ -151,7 +141,10 @@ function drawCircle(obj){
   
 function repaint(){
   context.clearRect(0, 0, lCanvas.width, lCanvas.height);
-  drawAxes();
+  drawLeftAxis();
+  if(typeof interfaceArray === "undefined"){
+    return;
+  }
   for(var i=0; i<interfaceArray.length; i++){
     drawCircle(interfaceArray[i]);
   }
