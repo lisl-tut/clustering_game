@@ -1,6 +1,8 @@
 // スクリプト読み込み時に実行される
 var lCanvas = $('#tutorial').get(0);
 var context = lCanvas.getContext('2d');
+var rCanvas = $('#tutorial2').get(0);
+var rContext = rCanvas.getContext('2d');
 
 var clusterNum = 4; // 左画面における識別のためのクラスタ数
 var relX, relY;
@@ -110,7 +112,7 @@ function onUp(e){
   dragging = false;
 }
 
-// 軸を描画する
+// 左画面の軸を描画する
 function drawLeftAxis(){
   context.strokeStyle = 'rgba(0, 0, 0,1)';
   // 横軸
@@ -123,6 +125,26 @@ function drawLeftAxis(){
   context.moveTo(lCanvas.width/2, 0);
   context.lineTo(lCanvas.width/2, lCanvas.height);
   context.stroke();
+}
+
+/*
+右画面の軸を表示する関数
+軸には目盛りは振っていませんが，0から255とだけ描画されるようにしてあります．
+*/
+function drawRightAxis(){
+  rContext.beginPath();
+  rContext.strokeStyle = 'rgb(0, 0, 0)';
+  rContext.moveTo(rCanvas.width*0.1, rCanvas.height*0.9);
+  rContext.lineTo(rCanvas.width*0.1, rCanvas.height*0.1);
+  rContext.stroke();
+  rContext.moveTo(rCanvas.width*0.1, rCanvas.height*0.9);
+  rContext.lineTo(rCanvas.width*0.9, rCanvas.height*0.9);
+  rContext.stroke();
+  rContext.fillStyle = 'rgb(0, 0, 0)';
+  rContext.fillText('0', rCanvas.width*0.1-10, rCanvas.height*0.9);
+  rContext.fillText('255', rCanvas.width*0.1-20, rCanvas.height*0.11);
+  rContext.fillText('0', rCanvas.width*0.1, rCanvas.height*0.9+10);
+  rContext.fillText('255', rCanvas.width*0.9-10, rCanvas.height*0.9+10);
 }
 
 function drawCircle(obj){

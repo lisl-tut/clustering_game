@@ -94,3 +94,23 @@ ColorInterface.calcClusterMean = function(arr){
   }
   return result;
 }
+
+// 軌跡データの作成
+// init: 初期状態, history: 変更の差分
+ColorInterface.getTrajectory = function(init, history){
+  var ifTrajectory = [];
+  var colorPosDataTmp = ColorInterface.copyArray(init);
+  ifTrajectory.push(ColorInterface.copyArray(init));
+  for(let i = 0; i < history.length; i++){
+    var interface = history[i];
+    for(let key in colorPosDataTmp){
+      if(colorPosDataTmp[key].id == interface.id){
+        colorPosDataTmp[key].x = interface.x;
+        colorPosDataTmp[key].y = interface.y;
+        break;
+      }
+    }
+    ifTrajectory.push(ColorInterface.copyArray(colorPosDataTmp));
+  }
+  return ifTrajectory;
+}
