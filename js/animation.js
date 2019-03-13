@@ -77,21 +77,16 @@ function drawTrajectory(traArray, iter){
 function plotDataPoint(dataPoint, t){
   // ユーザーの動かした回数がクラスタリングのイテレーションよりも多い場合はそれに合わせる
   var resultIndex = Math.min(t, resMap["iters"]);
-  if(resultIndex === 0){
-    // 最初だけデータの色に合わせる
-    for(var i=0; i<dataPoint.length; i++){
-      const obj = dataPoint[i];
-      drawCircle(rContext, obj.x, obj.y, fixedR, obj.g, obj.b, rightRadius);
-    }
-  }else{
-    // あとはクラスタ中心に合わせる
-    for(var i=0; i<dataPoint.length; i++){
-      const obj = dataPoint[i];
+  for(var i=0; i<dataPoint.length; i++){
+    const obj = dataPoint[i];
+    var g = obj.g;
+    var b = obj.b;
+    if(resultIndex > 0){
       var clusterLabel = resMap["result"][resultIndex-1]["allocation"][obj.id];
-      var g = Math.round(resMap["result"][resultIndex-1]["centroid"][clusterLabel]["x"] * 255);
-      var b = Math.round(resMap["result"][resultIndex-1]["centroid"][clusterLabel]["y"] * 255);
-      drawCircle(rContext, obj.x, obj.y, fixedR, g, b, rightRadius);
+      g = Math.round(resMap["result"][resultIndex-1]["centroid"][clusterLabel]["x"] * 255);
+      b = Math.round(resMap["result"][resultIndex-1]["centroid"][clusterLabel]["y"] * 255);  
     }
+    drawCircle(rContext, obj.x, obj.y, fixedR, g, b, rightRadius);
   }
 }
 
@@ -115,7 +110,7 @@ function plotClusterCenter(t){
   for(var i=0; i<clusterNum; i++){
     var g = resMap["result"][res-1]["centroid"][i]["x"];
     var b = resMap["result"][res-1]["centroid"][i]["y"];
-    centroid.push(new ColorInterface(null, null, i, null, fixedR, g, b));
+    centroids.push(new ColorInterface(null, null, i, null, fixedR, g, b));
   }
   centroids = getCoordinatesAtRightPanel(rCanvas, centroids);
   for(var i=0; i<clusterNum; i++){
