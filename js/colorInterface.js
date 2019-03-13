@@ -94,7 +94,6 @@ ColorInterface.calcClusterMean = function(arr){
   }
   return result;
 }
-
 // 軌跡データの作成
 // init: 初期状態, history: 変更の差分
 ColorInterface.getTrajectory = function(init, history){
@@ -113,4 +112,15 @@ ColorInterface.getTrajectory = function(init, history){
     ifTrajectory.push(ColorInterface.copyArray(colorPosDataTmp));
   }
   return ifTrajectory;
+}
+// 座標から、対応するColorInterfaceのインデックスを取得
+ColorInterface.findCircle = function(arr, x, y, r){
+  var res = null;
+  for (let i = 0; i < arr.length; i++) {
+    const ele = arr[i];
+    if(Math.sqrt(Math.pow(ele.x - x, 2) + Math.pow(ele.y - y, 2)) < r){
+      res = i;
+    }
+  }
+  return res;
 }

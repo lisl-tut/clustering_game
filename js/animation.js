@@ -1,5 +1,5 @@
 function playAnime(){
-  if(typeof leftFlag === "undefined" || leftFlag === false){
+  if(!leftFlag){
     alert("答え合わせボタンを押す前に決定ボタンを押してください");
     return;
   }
@@ -8,12 +8,10 @@ function playAnime(){
     alert("データ受信エラー");
     return;
   }
-  // 描画回数
-  var loopNum = clusterMeanHistory.length;
-  if(loopNum < resMap["iters"]){
-    loopNum = resMap["iters"];
-  }
-  loop(0, loopNum);
+  // 描画回数の設定
+  var loopNum = Math.max(clusterMeanHistory.length, resMap["iters"]);
+  // 描画開始
+  loop(0, loopNum, 1000);
 }
 
 /*
@@ -26,23 +24,23 @@ endCountはカウンターの最後の値
         sleep(1000);
     }
 */
-function loop(i, endCount){
+function loop(i, endCount, delay){
   if(i <= endCount){
     loopContent(i);
-    setTimeout(function(){loop(++i, endCount)}, 1000);
+    setTimeout(function(){loop(++i, endCount, delay)}, delay);
   }
 }
 
 /* ここにloop関数でループさせる内容を書いてください． */
 function loopContent(i){
-  context.clearRect(0, 0, lCanvas.width, lCanvas.height);
-  rContext.clearRect(0, 0, rCanvas.width, rCanvas.height);
-  // 軸の描画
-  drawLeftAxis();
-  drawRightAxis();
+  clearPanel(lCanvas);
+  clearPanel(rCanvas);
   // 左画面描画
-  drawTrajectory(ColorInterface.getTrajectory(initialInterface, interfaceHistory), i);
+  var trajectory = ColorInterface.getTrajectory(initialInterface, interfaceHistory);
+  drawLeftAxis(); // 左画面の軸の描画
+  drawTrajectory(trajectory, i); // インターフェイスの履歴描画
   // 右画面描画
+  drawRightAxis(); // 右画面の軸の描画
   plotDataPoint(getCoordinatesAtRightPanel(initialInterface), i); // データ点
   plotClusterCenter(i); // クラスタ中心
   plotClusterCenterHistory(clusterMeanHistory, i, 0); // ユーザーのクラスタ中心
@@ -67,7 +65,8 @@ function getCoordinatesAtRightPanel(arr){
 function drawTrajectory(traArray, iter){
   var iterIndex = traArray.length <= iter ? traArray.length-1 : iter;
   for(let key in traArray[iterIndex]){
-    drawCircle(traArray[iterIndex][key]);
+    const obj = traArray[iterIndex][key];
+    drawCircle(lContext, obj.x, obj.y, fixedR, obj.getIntG(), obj.getIntB(), radius);
   }
 }
 
@@ -80,54 +79,28 @@ function plotDataPoint(dataPoint, t){
   }
   if(resultIndex === -1){
     for(var i=0; i<dataPoint.length; i++){
-      drawRightPCircle(dataPoint[i].x, dataPoint[i].y, dataPoint[i].g, dataPoint[i].b);
+      const obj = dataPoint[i];
+      drawCircle(rContext, obj.x, obj.y, fixedR, obj.g, obj.b, rightRadius);
     }
   }else{
     for(var i=0; i<dataPoint.length; i++){
-      var clusterLabel = resMap["result"][resultIndex]["allocation"][dataPoint[i].id]
+      const obj = dataPoint[i];
+      var clusterLabel = resMap["result"][resultIndex]["allocation"][obj.id];
       var g = Math.round(resMap["result"][resultIndex]["centroid"][clusterLabel]["x"] * 255);
       var b = Math.round(resMap["result"][resultIndex]["centroid"][clusterLabel]["y"] * 255);
-      drawRightPCircle(dataPoint[i].x, dataPoint[i].y, g, b);
+      drawCircle(rContext, obj.x, obj.y, fixedR, g, b, rightRadius);
     }
   }
 }
 
-// データアイコン
-function drawRightPCircle(x, y, colorG, colorB, roundColorG, roundColorB){
-  // 円を塗りつぶす
-  rContext.fillStyle = 'rgba('+fixedR+','+colorG+','+colorB+',1)';
-  rContext.beginPath();
-  rContext.arc(x, y, rightRadius, 0, Math.PI*2, false);
-  rContext.fill();
-
+// クラスタアイコンの描画
+function drawClusterIcon(context, x, y, r, g, b, radius){
   // 円の縁取り
-  rContext.lineWidth = 1;
-  rContext.strokeStyle = 'rgba(128,'+ roundColorG +','+ roundColorB+',1)';
-  rContext.beginPath();
-  rContext.arc(x, y, rightRadius, 0, Math.PI*2, false);
-  rContext.stroke();
-}
-
-// クラスタアイコン
-function drawRightCCircle(x, y, colorG, colorB, roundColorG, roundColorB){
-  // 円を塗りつぶす
-  rContext.fillStyle = 'rgba('+fixedR+','+colorG+','+colorB+',1)';
-  rContext.beginPath();
-  rContext.arc(x, y, rightRadius, 0, Math.PI*2, false);
-  rContext.fill();
-
-  // 円の縁取り
-  rContext.lineWidth = 5;
-  rContext.strokeStyle = 'rgba(128,'+ roundColorG +','+ roundColorB+',1)';
-  rContext.beginPath();
-  rContext.arc(x, y, rightRadius-10, 0, Math.PI*2, false);
-  rContext.stroke();
-
-  rContext.lineWidth = 1;
-  rContext.strokeStyle = 'rgba(128,'+ roundColorG +','+ roundColorB+',1)';
-  rContext.beginPath();
-  rContext.arc(x, y, rightRadius, 0, Math.PI*2, false);
-  rContext.stroke();
+  context.lineWidth = 5;
+  context.strokeStyle = 'rgba(0, 0, 0,1)';
+  context.beginPath();
+  context.arc(x, y, radius-10, 0, Math.PI*2, false);
+  context.stroke();
 }
 
 function plotClusterCenter(t){
@@ -145,7 +118,9 @@ function plotClusterCenter(t){
   }
   var centroid = getCoordinatesAtRightPanel(centroid);
   for(var i=0; i<clusterNum; i++){
-    drawRightCCircle(centroid[i].x, centroid[i].y, centroid[i].g, centroid[i].b);
+    const obj = centroid[i];
+    drawCircle(rContext, obj.x, obj.y, fixedR, obj.g, obj.b, rightRadius);
+    drawClusterIcon(rContext, obj.x, obj.y, fixedR, obj.g, obj.b, rightRadius);
   }
 }
 
@@ -189,6 +164,7 @@ function plotDot(x, y, marker, color){
   }
 
   function drawCrossDot(){
+      rContext.lineWidth = 1;
       rContext.beginPath();
       rContext.strokeStyle = color;
       rContext.moveTo(x-size/2, y-size/2);
@@ -199,23 +175,27 @@ function plotDot(x, y, marker, color){
       rContext.stroke();
   }
   function drawStrokeCircleDot(){
+      rContext.lineWidth = 1;
       rContext.beginPath();
       rContext.strokeStyle = color;
       rContext.arc(x, y, size/2, 0, Math.PI*2, false);
       rContext.stroke();
   }
   function drawFillCircleDot(){
+      rContext.lineWidth = 1;
       rContext.beginPath();
       rContext.fillStyle = color;
       rContext.arc(x, y, size/2, 0, Math.PI*2, false);
       rContext.fill();
   }
   function drawStrokeSquareDot(){
+      rContext.lineWidth = 1;
       rContext.beginPath();
       rContext.strokeStyle = color;
       rContext.strokeRect(x-size/2, y-size/2, size, size);
   }
   function drawFillSquareDot(){
+      rContext.lineWidth = 1;
       rContext.beginPath();
       rContext.fillStyle = color;
       rContext.fillRect(x-size/2, y-size/2, size, size);

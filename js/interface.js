@@ -1,30 +1,30 @@
 // スクリプト読み込み時に実行される
 var lCanvas = $('#tutorial').get(0);
-var context = lCanvas.getContext('2d');
+var lContext = lCanvas.getContext('2d');
 var rCanvas = $('#tutorial2').get(0);
 var rContext = rCanvas.getContext('2d');
 
 var clusterNum = 4; // 左画面における識別のためのクラスタ数
-var relX, relY;
+var relX, relY; // 丸の中心に対してどの位置をクリックしているかを保存する
 
 var interfaceArray;  // 左画面のインターフェースを構成する丸を格納
 var initialInterface;  // インターフェースの初期状態を格納
 var interfaceHistory;  // インターフェースの履歴を格納 
 var clusterMeanHistory;  // インターフェースのクラスタ中心を格納
 
-var resMap;
-var dataPoint;
+var resMap; // 学習結果を格納
+var dataPoint; // 右画面の描画用のデータの格納
 
 var dragging = false; //ドラッグ中かを示す変数
-var leftFlag;
+var leftFlag = false; // 決定ボタンが押されているかのフラグ
 
+// 初期設定
 lCanvas.addEventListener('mousedown', onDown, false);
 lCanvas.addEventListener('mousemove', onMove, false);
 lCanvas.addEventListener('mouseup', onUp, false);
-
-repaint();
 turnCanvas(false);
 
+/* ----- 以下関数 ----- */
 
 function turnCanvas(turnOn){
   if(turnOn){
@@ -44,17 +44,6 @@ function adjustComponents(){
   $('#tutorial2').attr('height', $('#div1').height());
 }
 
-function findCircle(arr, x, y, r){
-  var res = null;
-  for (let i = 0; i < arr.length; i++) {
-    const ele = arr[i];
-    if(Math.sqrt(Math.pow(ele.x - x, 2) + Math.pow(ele.y - y, 2)) < r){
-      res = i;
-    }
-  }
-  return res;
-}
-
 // 決定ボタンを押したときに呼ばれる
 function init() {
 
@@ -72,7 +61,7 @@ function init() {
   clusterMeanHistory = [];
   clusterMeanHistory.push(ColorInterface.calcClusterMean(interfaceArray));
   initialInterface = ColorInterface.copyArray(interfaceArray);
-  repaint();
+  drawLeftPanel();
   leftFlag = true;
 }
 
@@ -81,7 +70,7 @@ function onDown(e) {
   var x = e.clientX - lCanvas.getBoundingClientRect().left;
   var y = e.clientY - lCanvas.getBoundingClientRect().top;
   // 選択されたオブジェクトの要素番号を取得
-  var selectedIndex = findCircle(interfaceArray, x, y, radius);
+  var selectedIndex = ColorInterface.findCircle(interfaceArray, x, y, radius);
   dragging = selectedIndex !== null;
   if(!dragging) return;
   relX = interfaceArray[selectedIndex].x - x;
@@ -99,7 +88,7 @@ function onMove(e){
   if (!dragging) return;
   interfaceArray[selectedIndex].x = x + relX;
   interfaceArray[selectedIndex].y = y + relY;
-  repaint();
+  drawLeftPanel();
 }
 
 function onUp(e){
@@ -114,17 +103,17 @@ function onUp(e){
 
 // 左画面の軸を描画する
 function drawLeftAxis(){
-  context.strokeStyle = 'rgba(0, 0, 0,1)';
+  lContext.strokeStyle = 'rgba(0, 0, 0,1)';
   // 横軸
-  context.beginPath();
-  context.moveTo(0, lCanvas.height/2);
-  context.lineTo(lCanvas.width, lCanvas.height/2);
-  context.stroke();
+  lContext.beginPath();
+  lContext.moveTo(0, lCanvas.height/2);
+  lContext.lineTo(lCanvas.width, lCanvas.height/2);
+  lContext.stroke();
   // 縦軸
-  context.beginPath();
-  context.moveTo(lCanvas.width/2, 0);
-  context.lineTo(lCanvas.width/2, lCanvas.height);
-  context.stroke();
+  lContext.beginPath();
+  lContext.moveTo(lCanvas.width/2, 0);
+  lContext.lineTo(lCanvas.width/2, lCanvas.height);
+  lContext.stroke();
 }
 
 /*
@@ -132,6 +121,7 @@ function drawLeftAxis(){
 軸には目盛りは振っていませんが，0から255とだけ描画されるようにしてあります．
 */
 function drawRightAxis(){
+  rContext.lineWidth = 1;
   rContext.beginPath();
   rContext.strokeStyle = 'rgb(0, 0, 0)';
   rContext.moveTo(rCanvas.width*0.1, rCanvas.height*0.9);
@@ -147,30 +137,35 @@ function drawRightAxis(){
   rContext.fillText('255', rCanvas.width*0.9-10, rCanvas.height*0.9+10);
 }
 
-function drawCircle(obj){
+// 円を描画
+function drawCircle(context, x, y, r, g, b, radius){
   // 円を塗りつぶす
-  if("getIntG" in obj){
-    context.fillStyle = 'rgba('+obj.r+','+obj.getIntG()+','+obj.getIntB()+',1)';
-  }else{
-    context.fillStyle = 'rgba('+obj.r+','+Math.round(obj.g*255)+','+Math.round(obj.b*255)+',1)';
-  }
+  context.fillStyle = 'rgba('+r+','+g+','+b+',1)';
   context.beginPath();
-  context.arc(obj.x, obj.y, radius, 0, Math.PI*2, false);
+  context.arc(x, y, radius, 0, Math.PI*2, false);
   context.fill();
   // 円の縁取り
+  context.lineWidth = 1;
   context.strokeStyle = 'rgba(0, 0, 0,1)';
   context.beginPath();
-  context.arc(obj.x, obj.y, radius, 0, Math.PI*2, false);
+  context.arc(x, y, radius, 0, Math.PI*2, false);
   context.stroke();
 }
-  
-function repaint(){
-  context.clearRect(0, 0, lCanvas.width, lCanvas.height);
-  drawLeftAxis();
+
+// canvasを白紙にする
+function clearPanel(canvas){
+  var context = canvas.getContext('2d');
+  context.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function drawLeftPanel(){
   if(typeof interfaceArray === "undefined"){
     return;
   }
+  clearPanel(lCanvas);
+  drawLeftAxis();
   for(var i=0; i<interfaceArray.length; i++){
-    drawCircle(interfaceArray[i]);
+    const obj = interfaceArray[i]
+    drawCircle(lContext, obj.x, obj.y, fixedR, obj.getIntG(), obj.getIntB(), radius);
   }
 }
