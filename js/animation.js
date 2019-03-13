@@ -41,21 +41,23 @@ function loopContent(i){
   drawTrajectory(trajectory, i); // インターフェイスの履歴描画
   // 右画面描画
   drawRightAxis(); // 右画面の軸の描画
-  plotDataPoint(getCoordinatesAtRightPanel(initialInterface), i); // データ点
+  plotDataPoint(getCoordinatesAtRightPanel(rCanvas, initialInterface), i); // データ点
   plotClusterCenter(i); // クラスタ中心
   plotClusterCenterHistory(clusterMeanHistory, i, 0); // ユーザーのクラスタ中心
 }
 
+// TODO: 将来的にはdataPointもColorInterfaceで構成したい
 // interfaceArrayを入れると、dataPointを生成する
-function getCoordinatesAtRightPanel(arr){
+function getCoordinatesAtRightPanel(canvas, interfaceArray){
   var dataPoint = [];
-  for(let i = 0; i < arr.length; i++){
+  for(let i = 0; i < interfaceArray.length; i++){
+    const ele = interfaceArray[i];
     dataPoint.push({
-      x: arr[i].g*(rCanvas.width*0.8) + rCanvas.width*0.1,
-      y: rCanvas.height*(1 - 0.1) - arr[i].b*(rCanvas.height*0.8),
-      g: arr[i].getIntG(),
-      b: arr[i].getIntB(),
-      id: arr[i].id,
+      x: ele.g*(canvas.width*0.8) + canvas.width*0.1,
+      y: canvas.height*(1 - 0.1) - ele.b*(canvas.height*0.8),
+      g: ele.getIntG(),
+      b: ele.getIntB(),
+      id: ele.id,
     });
   }
   return dataPoint;
@@ -63,7 +65,8 @@ function getCoordinatesAtRightPanel(arr){
 
 // 軌跡データを左画面に描画
 function drawTrajectory(traArray, iter){
-  var iterIndex = traArray.length <= iter ? traArray.length-1 : iter;
+  //TODO: この行が正しく動くはまだチェックしてない
+  var iterIndex = Math.min(traArray.length - 1, iter);
   for(let key in traArray[iterIndex]){
     const obj = traArray[iterIndex][key];
     drawCircle(lContext, obj.x, obj.y, fixedR, obj.getIntG(), obj.getIntB(), radius);
@@ -72,22 +75,21 @@ function drawTrajectory(traArray, iter){
 
 // データポイントのプロット関数
 function plotDataPoint(dataPoint, t){
-  var resultIndex = t - 1;
   // ユーザーの動かした回数がクラスタリングのイテレーションよりも多い場合はそれに合わせる
-  if(resultIndex >= resMap["iters"]){
-    resultIndex = resMap["iters"] - 1;
-  }
-  if(resultIndex === -1){
+  var resultIndex = Math.min(t, resMap["iters"]);
+  if(resultIndex === 0){
+    // 最初だけデータの色に合わせる
     for(var i=0; i<dataPoint.length; i++){
       const obj = dataPoint[i];
       drawCircle(rContext, obj.x, obj.y, fixedR, obj.g, obj.b, rightRadius);
     }
   }else{
+    // あとはクラスタ中心に合わせる
     for(var i=0; i<dataPoint.length; i++){
       const obj = dataPoint[i];
-      var clusterLabel = resMap["result"][resultIndex]["allocation"][obj.id];
-      var g = Math.round(resMap["result"][resultIndex]["centroid"][clusterLabel]["x"] * 255);
-      var b = Math.round(resMap["result"][resultIndex]["centroid"][clusterLabel]["y"] * 255);
+      var clusterLabel = resMap["result"][resultIndex-1]["allocation"][obj.id];
+      var g = Math.round(resMap["result"][resultIndex-1]["centroid"][clusterLabel]["x"] * 255);
+      var b = Math.round(resMap["result"][resultIndex-1]["centroid"][clusterLabel]["y"] * 255);
       drawCircle(rContext, obj.x, obj.y, fixedR, g, b, rightRadius);
     }
   }
@@ -95,7 +97,6 @@ function plotDataPoint(dataPoint, t){
 
 // クラスタアイコンの描画
 function drawClusterIcon(context, x, y, r, g, b, radius){
-  // 円の縁取り
   context.lineWidth = 5;
   context.strokeStyle = 'rgba(0, 0, 0,1)';
   context.beginPath();
@@ -104,21 +105,21 @@ function drawClusterIcon(context, x, y, r, g, b, radius){
 }
 
 function plotClusterCenter(t){
-  if(t == 0){return;}
-  var resultIndex = t - 1;
-  if(resultIndex+1 >= resMap["iters"]){resultIndex = resMap["iters"]-2;}
-
-  var clusterNum = resMap["result"][resultIndex]["centroid"].length;
-  var centroid = [];
+  if(t == 0){
+    return;
+  }
+  var res = Math.min(t, resMap["iters"] - 1);
+  var clusterNum = resMap["result"][res-1]["centroid"].length;
+  var centroids = [];
 
   for(var i=0; i<clusterNum; i++){
-    var g = resMap["result"][resultIndex]["centroid"][i]["x"];
-    var b = resMap["result"][resultIndex]["centroid"][i]["y"];
+    var g = resMap["result"][res-1]["centroid"][i]["x"];
+    var b = resMap["result"][res-1]["centroid"][i]["y"];
     centroid.push(new ColorInterface(null, null, i, null, fixedR, g, b));
   }
-  var centroid = getCoordinatesAtRightPanel(centroid);
+  centroids = getCoordinatesAtRightPanel(rCanvas, centroids);
   for(var i=0; i<clusterNum; i++){
-    const obj = centroid[i];
+    const obj = centroids[i];
     drawCircle(rContext, obj.x, obj.y, fixedR, obj.g, obj.b, rightRadius);
     drawClusterIcon(rContext, obj.x, obj.y, fixedR, obj.g, obj.b, rightRadius);
   }
@@ -211,7 +212,6 @@ numに3を指定したときは0回目と1回目と2回目と3回目のクラス
     ... 以下同様
 */
 function plotClusterCenterHistory(dotHistory, num, marker){
-  var i, n;
   if(num > dotHistory.length - 1){
     num = dotHistory.length - 1; //表示回数がデータの表示できる回数分より大きかった場合はそこで打ち切る
   }
@@ -219,9 +219,7 @@ function plotClusterCenterHistory(dotHistory, num, marker){
   for(j = num; j < num + 1; j++){
     const element = clusterMeanHistory[j];
     for (const key in element) {
-      plotDot(element[key].g,
-              element[key].b,
-              marker, key);
+      plotDot(element[key].g, element[key].b, marker, key);
     }
   }
 }
