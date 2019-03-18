@@ -37,6 +37,7 @@ function get(url){
 
 // 問題データをとってくる関数
 function getData(){
+  virtualGetData('Data'+makeReqParams())
   return get('Data'+makeReqParams());
 }
 
