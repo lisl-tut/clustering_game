@@ -24,9 +24,22 @@ function getURLParameters(path){
  */
 function virtualGetData(path){
   virtualRequestJson = getURLParameters(path);
+  var dg = new DataGenerator(virtualRequestJson["mak"], virtualRequestJson["tun"]);
+  var samples = dg.generate();
+  console.log("samples are " + samples);
   return null;
 }
 
-function randCluster(){
-  
+class DataGenerator{
+  constructor(clusterNum, tuning){
+    this.samples = [];
+    this.sd = 0.1;  // データを生成する分布の標準偏差
+    this.criticalRegion = 2.0;
+    this.N = 20;  // データの生成数
+    this.tuning = 2;  // チューニングパラメータのデフォルト
+  }
+
+  generate(){
+    return [0, 0, 0];
+  }
 }
