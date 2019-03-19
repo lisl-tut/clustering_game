@@ -113,11 +113,22 @@ function learn(){
   // DP-means法のパラメータ
   var lambda = parseInt(virtualRequestJson["thr"]);
   var alg = parseInt(virtualRequestJson["alg"]);
-  var clustering = new Clustering(alg);
+  var clustering = new Clustering(alg, 0.0, 1.0, "K", k);
 }
 
 class Clustering{
-  constructor(alg){
-
+  constructor(data, min, max, alg, param){
+    this.data = data;
+    this.minCoordinate = min;  // 初期クラスタ中心の最小値
+    this.maxCorrdinate = max;  // 初期クラスタ中心の最大値
+    if (alg === 0){
+      this.method = "K";
+      this.k = param;
+    }else if(alg === 1){
+      this.method = "DP";
+      this.lambda = param;
+    }else{
+      this.method = null;
+    }
   }
 }

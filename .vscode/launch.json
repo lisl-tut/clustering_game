@@ -2,6 +2,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "CodeLens (Launch) - Clustering",
+      "request": "launch",
+      "mainClass": "Clustering",
+      "projectName": "clustering_game_e2a9d937"
+    },
+    {
+      "type": "java",
       "name": "CodeLens (Launch) - Sample",
       "request": "launch",
       "mainClass": "Sample"
