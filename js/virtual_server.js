@@ -4,6 +4,7 @@
 
 var virtualResultJson;
 var virtualRequestJson;
+var cluNum;  // 正解のクラスタ数
 
 // URLパラメータを取得してオブジェクトで返す
 // need to include jQuery
@@ -31,6 +32,8 @@ function virtualGetData(path){
   virtualRequestJson = getURLParameters(path);
   var dg = new DataGenerator(virtualRequestJson["mak"], virtualRequestJson["tun"]);
   var samples = dg.generate();
+  cluNum = dg.clusterNum;  // learn関数に渡す
+  learn(); // 仮想的にここにおいておくが、実際に使うときはinit関数に組み込む
   return samples;
 }
 
@@ -98,5 +101,23 @@ class DataGenerator{
       });
     }
     return samples;
+  }
+}
+
+function learn(){
+  // k-means法のパラメータ
+  var k = parseInt(virtualRequestJson["clu"]);
+  if ( parseInt(virtualRequestJson["mak"]) === 0 ) {
+    k = cluNum;
+  }
+  // DP-means法のパラメータ
+  var lambda = parseInt(virtualRequestJson["thr"]);
+  var alg = parseInt(virtualRequestJson["alg"]);
+  var clustering = new Clustering(alg);
+}
+
+class Clustering{
+  constructor(alg){
+
   }
 }
