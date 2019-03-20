@@ -151,6 +151,34 @@ class Clustering{
   }
 
   fit(){
-    console.log("fit");
+    var error = Number.MAX_VALUE;
+    var iter = 0;
+    var centroids;
+    while( error != 0.0){  // 変化がなくなるまで
+      centroids = this.calcCentroids();
+      break;
+    }    
+  }
+
+  calcCentroids(){
+    var centroids = {};
+    for ( let i = 0; i < this.assignedClusters.length; i++ ){
+      centroids[this.assignedClusters[i]] = null;
+    }
+    for ( let i = 0; i < this.data.length; i++ ){
+      var label = this.assignedClusters[i];
+      if(centroids[label] === null){
+        centroids[label] = {x: 0.0, y: 0.0, count: 1};
+      }else{
+        centroids[label].x += this.data[i].point[0];
+        centroids[label].y += this.data[i].point[1];
+        centroids[label].count++;
+      }
+    }
+    for ( var key in centroids ){
+      centroids[key].x /= centroids[key].count;
+      centroids[key].y /= centroids[key].count; 
+    }
+    return centroids;
   }
 }
