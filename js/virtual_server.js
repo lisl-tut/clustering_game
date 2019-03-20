@@ -33,7 +33,7 @@ function virtualGetData(path){
   var dg = new DataGenerator(virtualRequestJson["mak"], virtualRequestJson["tun"]);
   var samples = dg.generate();
   cluNum = dg.clusterNum;  // learn関数に渡す
-  learn(); // 仮想的にここにおいておくが、実際に使うときはinit関数に組み込む
+  learn(samples); // 仮想的にここにおいておくが、実際に使うときはinit関数に組み込む
   return samples;
 }
 
@@ -104,7 +104,7 @@ class DataGenerator{
   }
 }
 
-function learn(){
+function learn(data){
   // k-means法のパラメータ
   var k = parseInt(virtualRequestJson["clu"]);
   if ( parseInt(virtualRequestJson["mak"]) === 0 ) {
@@ -113,22 +113,44 @@ function learn(){
   // DP-means法のパラメータ
   var lambda = parseInt(virtualRequestJson["thr"]);
   var alg = parseInt(virtualRequestJson["alg"]);
-  var clustering = new Clustering(alg, 0.0, 1.0, "K", k);
+  var clustering = new Clustering(data, alg, 0.0, 1.0, k);
+  clustering.init();
+  clustering.fit();
 }
 
 class Clustering{
-  constructor(data, min, max, alg, param){
+  constructor(data, alg, min, max, param){
     this.data = data;
     this.minCoordinate = min;  // 初期クラスタ中心の最小値
     this.maxCorrdinate = max;  // 初期クラスタ中心の最大値
     if (alg === 0){
       this.method = "K";
-      this.k = param;
+      this.k = parseInt(param);
     }else if(alg === 1){
       this.method = "DP";
       this.lambda = param;
     }else{
       this.method = null;
     }
+  }
+
+  init(){
+    this.assignedClusters = []; // i番目のデータがどのクラスタに割り当てられているか
+    this.centroids = []; // j番目のクラスタのクラスタ中心
+    if (this.method === "K"){
+      for ( let i = 0; i < this.data.length; i++ ){
+        // 初期値の設定
+        var randomCluster = Math.floor(Math.random() * this.k);
+        this.assignedClusters.push(randomCluster);
+      }
+    }else if(this.method === "DP"){
+      for ( let i = 0; i < this.data.length; i++ ){
+        this.assignedClusters.push(0);
+      }
+    }
+  }
+
+  fit(){
+    console.log("fit");
   }
 }
