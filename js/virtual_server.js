@@ -155,9 +155,12 @@ class Clustering{
     var iter = 0;
     var centroids;
     while( error != 0.0){  // 変化がなくなるまで
-      centroids = this.calcCentroids();
+      this.centroids = this.calcCentroids();
+      console.log(this.centroids);
+      this.assignedClusters = this.assignCluster();
+      console.log(this.assignedClusters);
       break;
-    }    
+    }
   }
 
   calcCentroids(){
@@ -180,5 +183,26 @@ class Clustering{
       centroids[key].y /= centroids[key].count; 
     }
     return centroids;
+  }
+
+  assignCluster(){
+    var newAssignedClusters = [];
+    for ( let i = 0; i < this.data.length; i++ ) {
+      var minError = Number.MAX_VALUE;
+      var minLabel = null;
+      for ( let j in this.centroids) {
+        var centr = this.centroids[j];
+        var err = Math.sqrt(
+          Math.pow(centr.x - this.data[i].point[0], 2)
+          + Math.pow(centr.y - this.data[i].point[1], 2)
+        );
+        if ( minError > err) {
+          minError = err;
+          minLabel = j;
+        }
+      }
+      newAssignedClusters.push(parseInt(minLabel));
+    }
+    return newAssignedClusters;
   }
 }
