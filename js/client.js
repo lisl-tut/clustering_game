@@ -37,7 +37,9 @@ function get(url){
 
 // 問題データをとってくる関数
 function getData(){
-  return get('Data'+makeReqParams());
+  return JSON.stringify(virtualGetData('Data'+makeReqParams()))
+  //Java 版
+  //return get('Data'+makeReqParams());
 }
 
 // 答え合わせボタンを押したときに呼ばれる関数
